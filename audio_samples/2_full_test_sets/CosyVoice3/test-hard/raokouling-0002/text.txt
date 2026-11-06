@@ -1,0 +1,4 @@
+utterance: raokouling-0002
+prompt: 经济发展是城市高效宜居发展的基石。
+target: 梁家养了一群羊，蒋家竖起一面墙。梁家的羊撞倒了蒋家的墙，蒋家的墙压伤了梁家的羊。梁家让蒋家赔羊，蒋家让梁家垛墙。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00020065-00000041.wav (not redistributed; see the official test set)

@@ -1,0 +1,4 @@
+utterance: common_voice_en_20285294-common_voice_en_20285295
+prompt: The composition and specific functions of the signoria varied from city to city.
+target: He was at once a merchant, architect and builder.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_20285294.wav (not redistributed; see the official test set)

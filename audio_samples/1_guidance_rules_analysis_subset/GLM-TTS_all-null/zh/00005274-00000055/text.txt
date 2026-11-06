@@ -1,0 +1,4 @@
+utterance: 00005274-00000055
+prompt: 用果肉的那一面轻轻擦拭晒伤晒红的部位。
+target: 尽管时代变迁，但这间老店却像激流里，唯一不动的岩石。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00005274-00000021.wav (not redistributed; see the official test set)

@@ -1,0 +1,4 @@
+utterance: long_zh_099
+prompt: 写一个大头杆，这么握着，手指交错。
+target: 周身一粒粒绿莹莹的细微光点凭空浮现。中午陪完喝酒，我已是晕晕乎乎，下午什么事都没法干。在当地时间周五晚结束的一场友谊赛中。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00005457-00000114.wav (not redistributed; see the official test set)

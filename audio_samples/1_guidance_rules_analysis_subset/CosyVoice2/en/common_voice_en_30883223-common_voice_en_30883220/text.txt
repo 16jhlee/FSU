@@ -1,0 +1,4 @@
+utterance: common_voice_en_30883223-common_voice_en_30883220
+prompt: Sullivan completed her undergraduate studies at Princeton University.
+target: Carpenter was paralyzed by polio while the couple were living in Iran.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_30883223.wav (not redistributed; see the official test set)

@@ -1,0 +1,3 @@
+utterance: 3575-170457-0029
+prompt: This decision was communicated to the girls.
+target: Your letter has given me great pleasure, and I should not forgive myself if I did not tell you so.

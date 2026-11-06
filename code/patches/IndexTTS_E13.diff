@@ -1,0 +1,15 @@
+--- a/indextts/s2mel/modules/flow_matching.py
++++ b/indextts/s2mel/modules/flow_matching.py
+@@ -91,7 +91,11 @@ class BASECFM(torch.nn.Module, ABC):
+                 w = 0.0
+             if getattr(self, 'cfg_ramp', None) is not None:
+                 w = w * min(1.0, float(t) / self.cfg_ramp)
+-            if w > 0:
++            # [speechFM patch E13] per-step weight w_k (E13-2 / E13-6); negative weights also take the guided branch
++            # (official code guides only for w > 0; identical for every w >= 0)
++            if getattr(self, 'cfg_steps', None) is not None:
++                w = self.cfg_steps[step - 1]
++            if w != 0:
+                 # [speechFM patch branch] what the unconditional row erases: all (official) /
+                 # speaker (prompt mel + style, content mu kept) / token (content mu, prompt mel + style kept)
+                 br = getattr(self, 'cfg_branch', 'all')

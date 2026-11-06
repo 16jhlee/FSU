@@ -1,0 +1,4 @@
+utterance: 00005309-00000007
+prompt: 小猕猴立即用手势，把这个消息报告给大头鱼。
+target: 六月二日晚已召集菜鸟网络，和顺丰速运高层来京。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00005309-00000039.wav (not redistributed; see the official test set)

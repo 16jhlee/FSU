@@ -1,0 +1,4 @@
+utterance: 10002290-00000102
+prompt: 对此，乔宝云认为有夸大的成分。
+target: 说说你们在京藏高速怀安段，堵车现场看到的情况。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/10002290-00000094.wav (not redistributed; see the official test set)

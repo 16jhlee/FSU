@@ -1,0 +1,164 @@
+﻿# E8'-10 (v9.1): cumulative sampler patch vs upstream HEAD (includes E5/E7/E8'/E8'-7 hooks + E8'-10 TFR/PCI/TV-CFG/JRR).
+# Apply with: git -C repos/ZipVoice apply patches/ZipVoice_E8p10.diff
+diff --git a/zipvoice/bin/infer_zipvoice.py b/zipvoice/bin/infer_zipvoice.py
+index a741036..d94c55b 100644
+--- a/zipvoice/bin/infer_zipvoice.py
++++ b/zipvoice/bin/infer_zipvoice.py
+@@ -76,6 +76,7 @@ from huggingface_hub import hf_hub_download
+ from lhotse.utils import fix_random_seed
+ from vocos import Vocos
+ 
++from zipvoice.models.modules import solver as zsolver  # [speechFM patch E5]
+ from zipvoice.models.zipvoice import ZipVoice
+ from zipvoice.models.zipvoice_distill import ZipVoiceDistill
+ from zipvoice.tokenizer.tokenizer import (
+@@ -289,6 +290,27 @@ def get_parser():
+         "speech (edge silences will be removed by default).",
+     )
+ 
++    # [speechFM patch] per-utterance noise seed (paired comparisons across NFE)
++    parser.add_argument(
++        "--seed-per-utt",
++        type=str2bool,
++        default=False,
++        help="Reseed before each utterance with hash(wav_name|noise|noise_key).",
++    )
++    parser.add_argument("--noise-key", type=str, default="0")
++    parser.add_argument("--skip-existing", type=str2bool, default=False)
++    # [speechFM patch E5] sampler options
++    parser.add_argument("--sampler", type=str, default="euler", choices=["euler", "a1"])
++    parser.add_argument("--t-span", type=str, default=None,
++                        help="explicit timesteps 't0,...,1' (t=0 noise); overrides num-step/t-shift")
++    parser.add_argument("--restart-tr", type=float, default=None,
++                        help="A4: re-noise the output to this time (t=0 noise) and take one more step")
++    # [speechFM patch E7]
++    parser.add_argument("--cfg-interval", type=str, default=None,
++                        help="'tmin,tmax': guidance only for steps starting in [tmin,tmax] (t=0 noise)")
++    # [speechFM patch E8p10]
++    parser.add_argument("--pci", type=str2bool, default=False, help="Prompt-Consistency Inference (2610.04757)")
++
+     parser.add_argument(
+         "--trt-engine-path",
+         type=str,
+@@ -659,7 +681,12 @@ def generate_list(
+     raw_evaluation: bool = False,
+     max_duration: float = 100,
+     remove_long_sil: bool = False,
++    seed_per_utt: bool = False,
++    noise_key: str = "0",
++    skip_existing: bool = False,
+ ):
++    import hashlib
++
+     total_t = []
+     total_t_no_vocoder = []
+     total_t_vocoder = []
+@@ -671,6 +698,15 @@ def generate_list(
+     for i, line in enumerate(lines):
+         wav_name, prompt_text, prompt_wav, text = line.strip().split("\t")
+         save_path = f"{res_dir}/{wav_name}.wav"
++        if skip_existing and os.path.exists(save_path):
++            continue
++        if seed_per_utt:
++            key = f"{wav_name}|noise|{noise_key}".encode("utf-8")
++            fix_random_seed(int(hashlib.sha1(key).hexdigest()[:12], 16) % (2**31 - 1))
++        if zsolver.E5["restart"] is not None:
++            rkey = f"{wav_name}|restart|{noise_key}".encode("utf-8")
++            zsolver.E5["restart"] = (zsolver.E5["restart"][0],
++                                     int(hashlib.sha1(rkey).hexdigest()[:12], 16) % (2**31 - 1))
+ 
+         common_params = {
+             "save_path": save_path,
+@@ -728,6 +764,11 @@ def main():
+     params = AttributeDict()
+     params.update(vars(args))
+     fix_random_seed(params.seed)
++    zsolver.E5["mode"] = params.sampler
++    zsolver.E5["t_span"] = [float(x) for x in params.t_span.split(",")] if params.t_span else None
++    zsolver.E5["restart"] = (params.restart_tr, 0) if params.restart_tr is not None else None
++    zsolver.E5["cfg_interval"] = [float(x) for x in params.cfg_interval.split(",")] if params.cfg_interval else None
++    zsolver.E5["pci"] = bool(params.pci)
+ 
+     model_defaults = {
+         "zipvoice": {
+@@ -863,6 +904,9 @@ def main():
+             raw_evaluation=params.raw_evaluation,
+             max_duration=params.max_duration,
+             remove_long_sil=params.remove_long_sil,
++            seed_per_utt=params.seed_per_utt,
++            noise_key=params.noise_key,
++            skip_existing=params.skip_existing,
+         )
+     else:
+         assert (
+diff --git a/zipvoice/models/modules/solver.py b/zipvoice/models/modules/solver.py
+index f4b9c4e..78044e1 100644
+--- a/zipvoice/models/modules/solver.py
++++ b/zipvoice/models/modules/solver.py
+@@ -225,18 +225,51 @@ class EulerSolver:
+             t_shift=t_shift,
+             device=device,
+         )
++        # [speechFM patch E5] sampler options (defaults = original Euler)
++        if E5["t_span"] is not None:
++            timesteps = torch.tensor(E5["t_span"], device=device, dtype=x.dtype)
++            num_step = len(timesteps) - 1
++        eps0 = x
++        # [speechFM patch E8p10] PCI (2610.04757 Eq.8): before every velocity evaluation the prompt block is reset to
++        # t f_P + (1 - t) eps_P (t=0 noise). Prompt frames = non-zero rows of speech_condition (zeros elsewhere by construction)
++        pci = E5.get("pci", False)
++        if pci:
++            pmask = (speech_condition.abs().sum(-1, keepdim=True) > 0).to(x.dtype)
+ 
+         for step in range(num_step):
++            if pci:
++                tt = timesteps[step]
++                x = pmask * (tt * speech_condition + (1 - tt) * eps0) + (1 - pmask) * x
++            # [speechFM patch E7] step-wise guidance: w=0 outside [tmin, tmax] (step start time, t=0 noise)
++            gs = guidance_scale
++            iv = E5.get("cfg_interval")
++            if iv is not None and not (iv[0] <= float(timesteps[step]) <= iv[1]):
++                gs = 0.0
+             v = self.model(
+                 t=timesteps[step],
+                 x=x,
+                 text_condition=text_condition,
+                 speech_condition=speech_condition,
+                 padding_mask=padding_mask,
+-                guidance_scale=guidance_scale,
++                guidance_scale=gs,
+                 **kwargs
+             )
+-            x = x + v * (timesteps[step + 1] - timesteps[step])
++            if E5["mode"] == "a1":
++                # A1: re-interpolate the x-prediction with the ORIGINAL noise (t=0 noise, t=1 data)
++                x_hat = x + (1 - timesteps[step]) * v
++                x = (1 - timesteps[step + 1]) * eps0 + timesteps[step + 1] * x_hat
++            else:
++                x = x + v * (timesteps[step + 1] - timesteps[step])
++        if E5["restart"] is not None:
++            # A4: re-noise the output to time t_r with fresh noise, then one more Euler step to t=1
++            t_r, seed = E5["restart"]
++            g = torch.Generator(device=x.device).manual_seed(int(seed))
++            noise = torch.randn(x.shape, generator=g, device=x.device, dtype=x.dtype)
++            x = t_r * x + (1 - t_r) * noise
++            t_r_t = torch.tensor(t_r, device=device, dtype=x.dtype)
++            v = self.model(t=t_r_t, x=x, text_condition=text_condition, speech_condition=speech_condition,
++                           padding_mask=padding_mask, guidance_scale=guidance_scale, **kwargs)
++            x = x + v * (1 - t_r_t)
+         return x
+ 
+ 
+@@ -253,6 +286,11 @@ class DistillEulerSolver(EulerSolver):
+         self.model = DistillDiffusionModel(model, func_name=func_name)
+ 
+ 
++# [speechFM patch E5] mode: "euler" | "a1"; t_span: explicit timesteps (t=0 noise -> 1 data);
++# restart: (t_r, seed) or None. Set per utterance by infer_zipvoice.py.
++E5 = {"mode": "euler", "t_span": None, "restart": None, "cfg_interval": None, "pci": False}
++
++
+ def get_time_steps(
+     t_start: float = 0.0,
+     t_end: float = 1.0,
+

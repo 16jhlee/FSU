@@ -1,0 +1,3 @@
+utterance: 4992-23283-0000
+prompt: exclaimed Bill Harmon to his wife as they went through the lighted hall.
+target: But the more forgetfulness had then prevailed, the more powerful was the force of remembrance when she awoke.

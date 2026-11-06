@@ -1,0 +1,4 @@
+utterance: 00004607-00000056
+prompt: 那种疼痛普通人可怕会直接痛晕过去。
+target: 因当天派出所所有大案忙不开，派出所将双方交给镇政府处理。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004607-00000107.wav (not redistributed; see the official test set)

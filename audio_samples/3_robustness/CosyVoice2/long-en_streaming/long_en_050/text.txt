@@ -1,0 +1,4 @@
+utterance: long_en_050
+prompt: There are thousands of fishing guides but some are better than others.
+target: To communicate over the longest distances, hams use moon bounce. Red Star were the defending champions from the previous season. I like the avenger of the new episode, he really is a badass.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_25568854.wav (not redistributed; see the official test set)

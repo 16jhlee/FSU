@@ -1,0 +1,3 @@
+utterance: 8555-284449-0020
+prompt: The goat's warlike spirit was roused by this successful attack.
+target: The combined bands of both the countries played the music and a fine supper was served.

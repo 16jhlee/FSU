@@ -1,0 +1,4 @@
+utterance: 10002430-00000015
+prompt: 请听那些贵族们所讲的话吧。
+target: 目前共享出行市场处于高速增长阶段。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/10002430-00000103.wav (not redistributed; see the official test set)

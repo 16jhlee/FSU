@@ -1,0 +1,4 @@
+utterance: common_voice_en_21877403-common_voice_en_21877406
+prompt: The radio show "About a Dog" was based on her last comedy proposal.
+target: She leaves abruptly during the meeting, and is never seen again.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_21877403.wav (not redistributed; see the official test set)

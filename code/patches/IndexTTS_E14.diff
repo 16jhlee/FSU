@@ -1,0 +1,83 @@
+# E14R-2 (v10.7): external rules in solve_euler; apply after IndexTTS_E8p / _branch / _E13.
+diff --git a/indextts/s2mel/modules/flow_matching.py b/indextts/s2mel/modules/flow_matching.py
+index 2999b93c..953a1cc1 100644
+--- a/indextts/s2mel/modules/flow_matching.py
++++ b/indextts/s2mel/modules/flow_matching.py
+@@ -1,4 +1,5 @@
+ from abc import ABC
++import math
+ 
+ import torch
+ import torch.nn.functional as F
+@@ -82,6 +83,7 @@ class BASECFM(torch.nn.Module, ABC):
+         x[..., :prompt_len] = 0
+         if self.zero_prompt_speech_token:
+             mu[..., :prompt_len] = 0
++        tv = getattr(self, 'tv_scales', None)  # [speechFM patch E14] TV-CFG per-step guidance scale g_k (w_k = g_k - 1)
+         for step in tqdm(range(1, len(t_span))):
+             dt = t_span[step] - t_span[step - 1]
+             # [speechFM patch E8'] step-wise CFG: w=0 for steps starting outside cfg_interval; optional ramp
+@@ -95,10 +97,16 @@ class BASECFM(torch.nn.Module, ABC):
+             # (official code guides only for w > 0; identical for every w >= 0)
+             if getattr(self, 'cfg_steps', None) is not None:
+                 w = self.cfg_steps[step - 1]
++            if tv is not None and w != 0:
++                w = tv[step - 1] - 1.0
+             if w != 0:
+                 # [speechFM patch branch] what the unconditional row erases: all (official) /
+                 # speaker (prompt mel + style, content mu kept) / token (content mu, prompt mel + style kept)
+                 br = getattr(self, 'cfg_branch', 'all')
++                # [speechFM patch E14] Selective-CFG def_text: all-null CFG while t < switch time, cfg_branch after
++                sw = getattr(self, 'cfg_branch_switch_t', None)
++                if sw is not None and float(t) < sw:
++                    br = 'all'
+                 # Stack original and CFG (null) inputs for batched processing
+                 stacked_prompt_x = torch.cat([prompt_x, prompt_x if br == 'token' else torch.zeros_like(prompt_x)], dim=0)
+                 stacked_style = torch.cat([style, style if br == 'token' else torch.zeros_like(style)], dim=0)
+@@ -118,10 +126,44 @@ class BASECFM(torch.nn.Module, ABC):
+                     self.dump_states.append(dict(t=float(t), vc=dphi_dt.detach().float().cpu(),
+                                                  vu=cfg_dphi_dt.detach().float().cpu(), prompt_len=prompt_len))
+ 
+-                # Apply CFG formula
+-                dphi_dt = (1.0 + w) * dphi_dt - w * cfg_dphi_dt
++                # [speechFM patch E14] external rules transcribed from patches/CosyVoice_E8p7.diff / CosyVoice_E8p10.diff
++                # MAMBO-G (2508.03442 Eq.5-6): w_k = w * exp(-alpha * ||v_c - v_u|| / ||v_u||)
++                mambo = getattr(self, 'mambo_alpha', None)
++                if mambo is not None:
++                    r = float(torch.norm((dphi_dt - cfg_dphi_dt).float()) / torch.norm(cfg_dphi_dt.float()))
++                    w = w * math.exp(-mambo * r)
++                # CFG-Zero* optimised scale s* = <v_c, v_u> / (||v_u||^2 + 1e-8) applied to v_u
++                if getattr(self, 'cfg_zero_star', False):
++                    vc_f, vu_f = dphi_dt.float().flatten(1), cfg_dphi_dt.float().flatten(1)
++                    s = ((vc_f * vu_f).sum(1) / ((vu_f * vu_f).sum(1) + 1e-8)).view(-1, 1, 1)
++                    cfg_dphi_dt = (s * cfg_dphi_dt.float()).to(cfg_dphi_dt.dtype)
++                jrr = getattr(self, 'jrr', None)
++                if jrr is not None:
++                    # JRR-CFG (2606.25672 Eq.1-4, 11): text-only (prompt mel + style erased), speaker-only (mu erased)
++                    v2 = self.estimator(stacked_x, torch.cat([torch.zeros_like(prompt_x), prompt_x], dim=0), x_lens,
++                                        stacked_t, torch.cat([torch.zeros_like(style), style], dim=0),
++                                        torch.cat([mu, torch.zeros_like(mu)], dim=0))
++                    v_text, v_spk = v2.chunk(2, dim=0)
++                    gT, gS, gI = jrr
++                    T, S = v_text - cfg_dphi_dt, v_spk - cfg_dphi_dt
++                    I = dphi_dt - v_text - v_spk + cfg_dphi_dt
++                    dphi_dt = dphi_dt + gT * T + gS * S + gI * I
++                elif getattr(self, 'tfr', False):
++                    # TFR (2607.07665 Def.1/Eq.15), straight path: D = x + (1-t) v, a = (1-t1)/(1-t0), r = a t0/t1
++                    t0, t1 = float(t), float(t + dt)
++                    a = (1 - t1) / (1 - t0)
++                    r = a * t0 / t1 if t1 > 0 else 0.0
++                    Dc, Du = x + (1 - t0) * dphi_dt, x + (1 - t0) * cfg_dphi_dt
++                    x_next = a * x + (1 - a) * Dc + t1 * (r ** (1 + w) - r) * (Du - Dc)
++                    dphi_dt = (x_next - x) / dt
++                else:
++                    # Apply CFG formula
++                    dphi_dt = (1.0 + w) * dphi_dt - w * cfg_dphi_dt
+             else:
+                 dphi_dt = self.estimator(x, prompt_x, x_lens, t.unsqueeze(0), style, mu)
++            # [speechFM patch E14] CFG-Zero* zero-init: velocity 0 for the first K steps (state unchanged)
++            if step <= getattr(self, 'zero_init_steps', 0):
++                dphi_dt = dphi_dt * 0.
+ 
+             x = x + dt * dphi_dt
+             t = t + dt

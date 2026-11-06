@@ -1,0 +1,4 @@
+utterance: 00004674-00000085
+prompt: 开车扣篮挑战扣断篮架时长十一秒。
+target: 这里将是本周末全国气候最阴凉的区域。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004674-00000102.wav (not redistributed; see the official test set)

@@ -1,0 +1,52 @@
+diff --git a/cosyvoice/flow/flow_matching.py b/cosyvoice/flow/flow_matching.py
+index 76d87bf..ee4b8ef 100644
+--- a/cosyvoice/flow/flow_matching.py
++++ b/cosyvoice/flow/flow_matching.py
+@@ -12,6 +12,7 @@
+ # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
++import math
+ import torch
+ import torch.nn.functional as F
+ from matcha.models.components.flow_matching import BASECFM
+@@ -112,6 +113,10 @@ class ConditionalCFM(BASECFM):
+             cond_in[0] = cond
+             # [speechFM patch branch] what the unconditional row erases (default 'all' = official)
+             br = getattr(self, 'cfg_branch', 'all')
++            # [speechFM patch E8p7] Selective-CFG def_text: all-null CFG while t < switch time, cfg_branch after
++            sw = getattr(self, 'cfg_branch_switch_t', None)
++            if sw is not None and float(t) < sw:
++                br = 'all'
+             if br == 'speaker':    # erase speaker embedding + prompt mel, keep tokens
+                 mu_in[1] = mu
+             elif br == 'token':    # erase tokens, keep speaker embedding + prompt mel
+@@ -135,6 +140,18 @@ class ConditionalCFM(BASECFM):
+             ramp = getattr(self, 'cfg_ramp', None)
+             if ramp is not None:
+                 w = w * min(1.0, float(t) / ramp)
++            # [speechFM patch E8p7] MAMBO-G (2508.03442 Eq.5-6): w_k = w * exp(-alpha * ||v_c - v_u|| / ||v_u||)
++            mambo = getattr(self, 'mambo_alpha', None)
++            if mambo is not None and w != 0.0:
++                r = float(torch.norm((dphi_dt - cfg_dphi_dt).float()) / torch.norm(cfg_dphi_dt.float()))
++                w = w * math.exp(-mambo * r)
++                if dump is not None:
++                    self.dump_args.setdefault('mambo_r', []).append(r)
++            # [speechFM patch E8p7] CFG-Zero* optimised scale s* = <v_c, v_u> / (||v_u||^2 + 1e-8) applied to v_u
++            if getattr(self, 'cfg_zero_star', False) and w != 0.0:
++                vc_f, vu_f = dphi_dt.float().flatten(1), cfg_dphi_dt.float().flatten(1)
++                s = ((vc_f * vu_f).sum(1) / ((vu_f * vu_f).sum(1) + 1e-8)).view(-1, 1, 1)
++                cfg_dphi_dt = (s * cfg_dphi_dt.float()).to(cfg_dphi_dt.dtype)
+             if getattr(self, 'cfg_mode', 'standard') == 'apg' and w != 0.0:
+                 # norm-preserving guidance in x-prediction space (APG core): keep only the component of the
+                 # guidance orthogonal to the conditional x-prediction. x_hat = x + (1-t) v (t=0 noise, t=1 data)
+@@ -147,6 +164,9 @@ class ConditionalCFM(BASECFM):
+                 dphi_dt = (xg - x) / (1 - t)
+             else:
+                 dphi_dt = ((1.0 + w) * dphi_dt - w * cfg_dphi_dt)
++            # [speechFM patch E8p7] CFG-Zero* zero-init: velocity 0 for the first K steps (state unchanged)
++            if step <= getattr(self, 'zero_init_steps', 0):
++                dphi_dt = dphi_dt * 0.
+             if dump is not None:
+                 dump.append(dict(t=float(t), x=x.detach().float().cpu(), v=dphi_dt.detach().float().cpu(),
+                                  vc=dphi_c.detach().float().cpu(), vu=cfg_dphi_dt.detach().float().cpu()))

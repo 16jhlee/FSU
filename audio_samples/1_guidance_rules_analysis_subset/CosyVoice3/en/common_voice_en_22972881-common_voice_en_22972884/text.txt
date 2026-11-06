@@ -1,0 +1,4 @@
+utterance: common_voice_en_22972881-common_voice_en_22972884
+prompt: He was a strong supporter of free trade, immigration programmes and education reforms.
+target: We're too much the ideal bad examples.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_22972881.wav (not redistributed; see the official test set)

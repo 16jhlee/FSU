@@ -1,0 +1,4 @@
+utterance: common_voice_en_23982302-common_voice_en_23982305
+prompt: It operates regional scheduled services and charter flights across East and Central Africa.
+target: Two theories abound to the origin of the name.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_23982302.wav (not redistributed; see the official test set)

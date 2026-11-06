@@ -1,0 +1,24 @@
+diff --git a/cosyvoice/flow/flow_matching.py b/cosyvoice/flow/flow_matching.py
+index 3eca42e..30d69f6 100644
+--- a/cosyvoice/flow/flow_matching.py
++++ b/cosyvoice/flow/flow_matching.py
+@@ -85,6 +85,10 @@ class ConditionalCFM(BASECFM):
+         """
+         t, _, dt = t_span[0], t_span[-1], t_span[1] - t_span[0]
+         t = t.unsqueeze(dim=0)
++        # [speechFM patch] optional state dump (read-only): caller sets self.dump_states = []
++        dump = getattr(self, 'dump_states', None)
++        if dump is not None:
++            self.dump_args = dict(mu=mu, mask=mask, spks=spks, cond=cond, streaming=streaming)
+ 
+         # I am storing this because I can later plot it by putting a debugger here and saving it to a file
+         # Or in future might add like a return_all_steps flag
+@@ -115,6 +119,8 @@ class ConditionalCFM(BASECFM):
+             )
+             dphi_dt, cfg_dphi_dt = torch.split(dphi_dt, [x.size(0), x.size(0)], dim=0)
+             dphi_dt = ((1.0 + self.inference_cfg_rate) * dphi_dt - self.inference_cfg_rate * cfg_dphi_dt)
++            if dump is not None:
++                dump.append(dict(t=float(t), x=x.detach().float().cpu(), v=dphi_dt.detach().float().cpu()))
+             x = x + dt * dphi_dt
+             t = t + dt
+             sol.append(x)

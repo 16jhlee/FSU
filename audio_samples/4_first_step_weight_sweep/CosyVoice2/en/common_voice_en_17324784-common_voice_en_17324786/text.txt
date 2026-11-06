@@ -1,0 +1,4 @@
+utterance: common_voice_en_17324784-common_voice_en_17324786
+prompt: Not everything that is faced can be changed; but nothing can be changed until it is faced.
+target: As independent studies document, the Neanderthals developed simple tools such as spears.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_17324784.wav (not redistributed; see the official test set)

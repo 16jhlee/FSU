@@ -1,0 +1,4 @@
+utterance: common_voice_en_19397397-common_voice_en_19397399
+prompt: The Knights conquered the Prussians and converted them to Christianity.
+target: His wife Ginny survives him with their son, two grandchildren and a great grandchild.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_19397397.wav (not redistributed; see the official test set)

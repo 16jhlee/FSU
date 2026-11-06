@@ -1,0 +1,32 @@
+diff --git a/indextts/s2mel/modules/flow_matching.py b/indextts/s2mel/modules/flow_matching.py
+index c5a7d31..e475f9e 100644
+--- a/indextts/s2mel/modules/flow_matching.py
++++ b/indextts/s2mel/modules/flow_matching.py
+@@ -92,10 +92,13 @@ class BASECFM(torch.nn.Module, ABC):
+             if getattr(self, 'cfg_ramp', None) is not None:
+                 w = w * min(1.0, float(t) / self.cfg_ramp)
+             if w > 0:
++                # [speechFM patch branch] what the unconditional row erases: all (official) /
++                # speaker (prompt mel + style, content mu kept) / token (content mu, prompt mel + style kept)
++                br = getattr(self, 'cfg_branch', 'all')
+                 # Stack original and CFG (null) inputs for batched processing
+-                stacked_prompt_x = torch.cat([prompt_x, torch.zeros_like(prompt_x)], dim=0)
+-                stacked_style = torch.cat([style, torch.zeros_like(style)], dim=0)
+-                stacked_mu = torch.cat([mu, torch.zeros_like(mu)], dim=0)
++                stacked_prompt_x = torch.cat([prompt_x, prompt_x if br == 'token' else torch.zeros_like(prompt_x)], dim=0)
++                stacked_style = torch.cat([style, style if br == 'token' else torch.zeros_like(style)], dim=0)
++                stacked_mu = torch.cat([mu, mu if br == 'speaker' else torch.zeros_like(mu)], dim=0)
+                 stacked_x = torch.cat([x, x], dim=0)
+                 stacked_t = torch.cat([t.unsqueeze(0), t.unsqueeze(0)], dim=0)
+ 
+@@ -107,6 +110,10 @@ class BASECFM(torch.nn.Module, ABC):
+                 # Split the output back into the original and CFG components
+                 dphi_dt, cfg_dphi_dt = stacked_dphi_dt.chunk(2, dim=0)
+ 
++                if getattr(self, 'dump_states', None) is not None:  # [speechFM patch branch] v_c / v_u dump
++                    self.dump_states.append(dict(t=float(t), vc=dphi_dt.detach().float().cpu(),
++                                                 vu=cfg_dphi_dt.detach().float().cpu(), prompt_len=prompt_len))
++
+                 # Apply CFG formula
+                 dphi_dt = (1.0 + w) * dphi_dt - w * cfg_dphi_dt
+             else:

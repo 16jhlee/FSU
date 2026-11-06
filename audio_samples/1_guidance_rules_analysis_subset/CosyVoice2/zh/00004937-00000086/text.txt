@@ -1,0 +1,4 @@
+utterance: 00004937-00000086
+prompt: 一边构筑衣服所代表的性别二元对立。
+target: 十二个小时呀，简单无法想象怎么熬过来的。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004937-00000010.wav (not redistributed; see the official test set)

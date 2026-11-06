@@ -1,0 +1,4 @@
+utterance: raokouling-0000
+prompt: 在舞台上演奏着莫扎特的奏鸣曲。
+target: 安安上课爱捣乱，一捣乱四邻不安，安老师劝安安莫捣乱。安安听了安老师劝，安心上课不捣乱。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004933-00000062.wav (not redistributed; see the official test set)

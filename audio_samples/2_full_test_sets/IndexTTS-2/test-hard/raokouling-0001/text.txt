@@ -1,0 +1,4 @@
+utterance: raokouling-0001
+prompt: 还是下载应用之后，买游戏道具或者音乐。
+target: 丫头片儿，卖鸡蛋儿，吆喝一声就拐弯儿，三买俩儿，不打价儿。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004535-00000036.wav (not redistributed; see the official test set)

@@ -1,0 +1,3 @@
+utterance: mm_de_099_male
+prompt: Der durch Wasser, Kohlensäure und Huminsäuren gelöste Kalk wird wieder in der Höhle abgelagert.
+target: Der Wissenschaftler hatte sein Leben damit verbracht, eine Zeitmaschine zu bauen, und an seinem hundertsten Geburtstag gelang es ihm endlich, in die Vergangenheit zu reisen, um seinen größten Fehler zu korrigieren.

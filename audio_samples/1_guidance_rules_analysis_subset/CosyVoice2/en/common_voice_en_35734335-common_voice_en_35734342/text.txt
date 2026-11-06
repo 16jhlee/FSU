@@ -1,0 +1,4 @@
+utterance: common_voice_en_35734335-common_voice_en_35734342
+prompt: In early life he revealed no homosexual tendencies.
+target: We do not know what rash expressions it may have contained.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_35734335.wav (not redistributed; see the official test set)

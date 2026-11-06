@@ -1,0 +1,4 @@
+utterance: 10002287-00000095
+prompt: 在此奉劝大家别乱打美白针。
+target: 简单地说，这相当于惠普把消费领域市场拱手相让了。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/10002287-00000094.wav (not redistributed; see the official test set)

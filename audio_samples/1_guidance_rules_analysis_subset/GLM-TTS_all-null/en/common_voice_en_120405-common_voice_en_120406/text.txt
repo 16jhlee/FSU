@@ -1,0 +1,4 @@
+utterance: common_voice_en_120405-common_voice_en_120406
+prompt: He approached the mass and was surprised at the size and the shape.
+target: The only shadow was that of the few scattered pine trees.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_120405.wav (not redistributed; see the official test set)

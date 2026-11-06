@@ -1,0 +1,3 @@
+utterance: mm_de_050_male
+prompt: Der durch Wasser, Kohlensäure und Huminsäuren gelöste Kalk wird wieder in der Höhle abgelagert.
+target: Guten Morgen, wie geht es dir heute? Ich hoffe, du hast gut geschlafen und bist voller Energie.

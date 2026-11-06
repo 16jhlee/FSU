@@ -1,0 +1,4 @@
+utterance: 00004834-00000018
+prompt: 让官差把小倩拖到城外乱坟岗去埋了。
+target: 这样你坐在车座上的时候，腿才能全部伸展开。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004834-00000079.wav (not redistributed; see the official test set)

@@ -1,0 +1,4 @@
+utterance: common_voice_en_10119832-common_voice_en_10119840
+prompt: We asked over twenty different people, and they all said it was his.
+target: Get the trust fund to the bank early.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_10119832.wav (not redistributed; see the official test set)

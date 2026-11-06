@@ -1,0 +1,16 @@
+diff --git a/src/f5_tts/model/cfm.py b/src/f5_tts/model/cfm.py
+index e001c2e..c8cb514 100644
+--- a/src/f5_tts/model/cfm.py
++++ b/src/f5_tts/model/cfm.py
+@@ -164,7 +164,10 @@ class CFM(nn.Module):
+             # step_cond = torch.where(cond_mask, cond, torch.zeros_like(cond))
+ 
+             # predict flow (cond)
+-            if cfg_strength < 1e-5:
++            # [speechFM patch E8'] step-wise CFG: no guidance when t is outside self.cfg_interval
++            iv = getattr(self, "cfg_interval", None)
++            off = iv is not None and not (iv[0] <= float(t) <= iv[1])
++            if cfg_strength < 1e-5 or off:
+                 pred = self.transformer(
+                     x=x,
+                     cond=step_cond,

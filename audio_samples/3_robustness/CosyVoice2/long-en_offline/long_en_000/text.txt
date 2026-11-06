@@ -1,0 +1,4 @@
+utterance: long_en_000
+prompt: Populations of the same species from different latitudes may also follow Allen's rule.
+target: He came upon her suddenly in one of these recesses. And they're really good. Producer Arlene Sherman has called Bert "everyone's idea of a blind date".
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_20688082.wav (not redistributed; see the official test set)

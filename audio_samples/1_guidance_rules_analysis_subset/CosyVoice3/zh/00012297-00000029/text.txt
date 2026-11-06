@@ -1,0 +1,4 @@
+utterance: 00012297-00000029
+prompt: 营造宁静和平的网络安全空间。
+target: 前方有左急转弯，请减速慢行。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00012297-00000014.wav (not redistributed; see the official test set)

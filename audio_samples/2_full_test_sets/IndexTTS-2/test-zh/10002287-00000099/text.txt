@@ -1,0 +1,4 @@
+utterance: 10002287-00000099
+prompt: 在此奉劝大家别乱打美白针。
+target: 可是对另外两台音调失准，怪声怪气的琴，他束手窝策。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/10002287-00000094.wav (not redistributed; see the official test set)

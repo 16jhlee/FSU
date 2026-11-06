@@ -1,0 +1,4 @@
+utterance: 00005456-00000030
+prompt: 二是增强银行业服务实体经济的能力。
+target: 不过旁人看来那不过是一种可怜渺小，变化无常的爱恋罢了。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00005456-00000107.wav (not redistributed; see the official test set)

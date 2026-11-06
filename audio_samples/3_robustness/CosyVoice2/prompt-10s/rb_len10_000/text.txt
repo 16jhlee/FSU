@@ -1,0 +1,3 @@
+utterance: rb_len10_000
+prompt: On Saturday mornings, when the Sodality met in the chapel to recite the little office, his place was a cushioned kneeling desk at the right of the altar from which he led his wing of
+target: He came upon her suddenly in one of these recesses.

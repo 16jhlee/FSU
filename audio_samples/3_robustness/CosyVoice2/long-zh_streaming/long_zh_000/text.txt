@@ -1,0 +1,4 @@
+utterance: long_zh_000
+prompt: 用果肉的那一面轻轻擦拭晒伤晒红的部位。
+target: 尽管时代变迁，但这间老店却像激流里，唯一不动的岩石。因为外面有战争，家里又有战争带来的悲伤和匮乏。那么你知道考生在未来的几天，应该消除压力。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00005274-00000021.wav (not redistributed; see the official test set)

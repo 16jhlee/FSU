@@ -1,0 +1,3 @@
+utterance: mm_de_001_female
+prompt: Da die Blüten im Sporn Nektar absondern, ist aber auch Insektenbestäubung möglich.
+target: Guten Tag! Ich hätte gerne eine Tasse Kaffee, bitte.

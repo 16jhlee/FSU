@@ -1,0 +1,4 @@
+utterance: 00004977-00000110
+prompt: 天女散花飘下九州，落地生根。
+target: 午饭以后海盗帮全体出动到哈到沙洲上，去找乌龟蛋。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004977-00000098.wav (not redistributed; see the official test set)

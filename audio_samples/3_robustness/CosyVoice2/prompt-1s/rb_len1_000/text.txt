@@ -1,0 +1,3 @@
+utterance: rb_len1_000
+prompt: on Saturday morning
+target: He came upon her suddenly in one of these recesses.

@@ -1,0 +1,4 @@
+utterance: 00005087-00000024
+prompt: 用拇指指腹从此穴往脚趾头方向按压。
+target: 他们用一种电机声刺耳的吹气筒，沿着马路把枯叶都吹进草堆。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00005087-00000095.wav (not redistributed; see the official test set)

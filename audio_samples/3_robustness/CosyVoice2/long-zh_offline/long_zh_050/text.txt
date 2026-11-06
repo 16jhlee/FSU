@@ -1,0 +1,4 @@
+utterance: long_zh_050
+prompt: 吃肉喝汤样样来，试问谁愿意老是当冤大头呢。
+target: 丹麦人荷尔格，把治理印度的一切大权都交给了约恩牧师。这里每年都要办好几场展销会，价格非常便宜。可是孩子我想晚上天黑，你也没看清他们长相对吗。
+prompt audio: Seed-TTS-eval zh/prompt-wavs/00004794-00000078.wav (not redistributed; see the official test set)

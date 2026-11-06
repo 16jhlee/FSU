@@ -1,0 +1,4 @@
+utterance: common_voice_en_103675-common_voice_en_103676
+prompt: I'm never more aware of a room's acoustics than when I'm trying to enjoy a snack I have no intention of sharing.
+target: One by one, the campfires were extinguished, and the oasis fell as quiet as the desert.
+prompt audio: Seed-TTS-eval en/prompt-wavs/common_voice_en_103675.wav (not redistributed; see the official test set)

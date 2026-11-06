@@ -1,0 +1,24 @@
+anyio==4.15.1
+beautifulsoup4==4.15.0
+certifi==2026.7.22
+charset-normalizer==3.5.2
+click==8.5.0
+colorama==0.4.6
+filelock==4.2.0
+fsspec==2026.9.0
+gdown==6.4.2
+h11==0.16.0
+hf-xet==1.7.0
+httpcore2==2.13.1
+httpx2==2.13.1
+huggingface_hub==2.2.0
+idna==3.20
+packaging @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_packaging_1785888127/work
+PySocks==1.7.1
+PyYAML==6.0.3
+requests==2.34.2
+soupsieve==3.0.3
+tqdm==4.70.1
+truststore==0.10.5
+typing_extensions==4.16.0
+urllib3==2.8.0

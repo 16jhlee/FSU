@@ -1,0 +1,12 @@
+# Pinned upstream commits (cloned 2026-10-17). Checkout these exact hashes for reproduction.
+# repo            commit                                     commit_date  url
+CosyVoice        074ca6dc9e80a2f424f1f74b48bdd7d3fea531cc   2026-05-26   https://github.com/FunAudioLLM/CosyVoice
+ZipVoice         2f7326fbfe999a3ad179e3f1af82a424d4a62819   2025-12-02   https://github.com/k2-fsa/ZipVoice
+F5-TTS           2f866649b779881af8bd644e76b9a6d95053da29   2026-10-14   https://github.com/SWivid/F5-TTS
+DMOSpeech2       10c2255a59b96c311c317536603a18672e69ac84   2025-07-21   https://github.com/yl4579/DMOSpeech2
+FlashTTS         d1d9dc0cff1dcb06a4f38d635f33b8f6cfeb3b4d   2026-06-16   https://github.com/ASLP-lab/FlashTTS
+seed-tts-eval    752f4297f090c46bb1a55a1f7439e5944ddefe8d   2024-06-14   https://github.com/BytedanceSpeech/seed-tts-eval
+index-tts        d9e41aac89fd00b3d71497fddb287b7f24613712   2026-09-30   https://github.com/index-tts/index-tts  (HF IndexTeam/IndexTTS-2 rev 740dcaff396282ffb241903d150ac011cd4b1ede)
+SenseVoiceSmall  modelscope iic/SenseVoiceSmall (master snapshot, 2026-10-21)  E8'-5 second ASR for ko/ja
+TangoFlux        declare-lab/TangoFlux (HF snapshot 2026-10-25) + repo 164420f   v8 §3.1
+SD3-medium       stabilityai/stable-diffusion-3-medium-diffusers (HF, gated; snapshot 2026-10-25)   v8 §3.1
