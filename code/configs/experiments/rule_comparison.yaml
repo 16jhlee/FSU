@@ -1,0 +1,294 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: Published guidance rules against FSU and FSU-Mid on the analysis subsets, two steps (Table I, Table IX, Figs.
+  7-8), with their step-count variants.
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [librispeech_pc]
+  seeds: [0]
+  methods:
+    n10_jrr: [--cfg, '0.7', --nfe, '10', --jrr, '0.70,1.20,0.95']
+
+- decoders: [cosyvoice2]
+  sets: [librispeech_pc]
+  seeds: [0]
+  methods: [teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [fsu_mid]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id001 [cosyvoice2]
+  sets: &id002 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id003 [0]
+  methods: [cfg_zero_init, cfg_zero_scale, jrr_cfg, mambo_g, prompt_consistency, sel_cfg_default, terminal_fitted_repair,
+    tv_cfg, tv_cfg_corrected, tv_cfg_stepup]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n10_cfgzero: [--cfg, '0.7', --nfe, '10', --cfg_zero_star, '1']
+    n10_cfgzero_zeroinit1: [--cfg, '0.7', --nfe, '10', --zero_init, '1', --cfg_zero_star, '1']
+    n10_fsu_pci: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0', --pci, '1']
+    n10_fsu_tfr: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n10_interval0.1-0.8: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,0.8']
+    n10_interval0.2-0.8: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.2,0.8']
+    n10_jrr: [--cfg, '0.7', --nfe, '10', --jrr, '0.70,1.20,0.95']
+    n10_jrr_jrr3steps: [--cfg, '0.7', --nfe, '10', --jrr, '0.70,1.20,0.95', --jrr_steps, '3']
+    n10_mambo0.5: [--cfg, '0.7', --nfe, '10', --mambo_alpha, '0.5']
+    n10_mambo1: [--cfg, '0.7', --nfe, '10', --mambo_alpha, '1']
+    n10_mambo2: [--cfg, '0.7', --nfe, '10', --mambo_alpha, '2']
+    n10_mambo4: [--cfg, '0.7', --nfe, '10', --mambo_alpha, '4']
+    n10_pci: [--cfg, '0.7', --nfe, '10', --pci, '1']
+    n10_switch0.08_speakernull: [--cfg, '0.7', --nfe, '10', --cfg_branch, speaker, --branch_switch_t, '0.08']
+    n10_tfr: [--cfg, '0.7', --nfe, '10', --tfr, '1']
+    n10_tv-stepup: [--cfg, '0.7', --nfe, '10', --tv, stepup]
+    n10_tv-symmetric: [--cfg, '0.7', --nfe, '10', --tv, symmetric]
+    n10_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '10', --tv, symmetric_fix]
+    n10_zeroinit1: [--cfg, '0.7', --nfe, '10', --zero_init, '1']
+    n2_cfgzero_zeroinit1: [--cfg, '0.7', --nfe, '2', --zero_init, '1', --cfg_zero_star, '1']
+    n2_fsu_pci: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1.0', --pci, '1']
+    n2_fsu_tfr: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n2_jrr_jrr1steps: [--cfg, '0.7', --nfe, '2', --jrr, '0.70,1.20,0.95', --jrr_steps, '1']
+    n2_mambo0.5: [--cfg, '0.7', --nfe, '2', --mambo_alpha, '0.5']
+    n2_mambo1: [--cfg, '0.7', --nfe, '2', --mambo_alpha, '1']
+    n2_mambo2: [--cfg, '0.7', --nfe, '2', --mambo_alpha, '2']
+    n3_cfgzero: [--cfg, '0.7', --nfe, '3', --cfg_zero_star, '1']
+    n3_cfgzero_zeroinit1: [--cfg, '0.7', --nfe, '3', --zero_init, '1', --cfg_zero_star, '1']
+    n3_fsu_pci: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.1,1.0', --pci, '1']
+    n3_fsu_tfr: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n3_interval0.2-0.8: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.2,0.8']
+    n3_jrr: [--cfg, '0.7', --nfe, '3', --jrr, '0.70,1.20,0.95']
+    n3_jrr_jrr1steps: [--cfg, '0.7', --nfe, '3', --jrr, '0.70,1.20,0.95', --jrr_steps, '1']
+    n3_mambo0.5: [--cfg, '0.7', --nfe, '3', --mambo_alpha, '0.5']
+    n3_mambo1: [--cfg, '0.7', --nfe, '3', --mambo_alpha, '1']
+    n3_mambo2: [--cfg, '0.7', --nfe, '3', --mambo_alpha, '2']
+    n3_mambo4: [--cfg, '0.7', --nfe, '3', --mambo_alpha, '4']
+    n3_pci: [--cfg, '0.7', --nfe, '3', --pci, '1']
+    n3_switch0.08_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker, --branch_switch_t, '0.08']
+    n3_tfr: [--cfg, '0.7', --nfe, '3', --tfr, '1']
+    n3_tv-stepup: [--cfg, '0.7', --nfe, '3', --tv, stepup]
+    n3_tv-symmetric: [--cfg, '0.7', --nfe, '3', --tv, symmetric]
+    n3_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '3', --tv, symmetric_fix]
+    n3_zeroinit1: [--cfg, '0.7', --nfe, '3', --zero_init, '1']
+    n4_cfgzero: [--cfg, '0.7', --nfe, '4', --cfg_zero_star, '1']
+    n4_cfgzero_zeroinit1: [--cfg, '0.7', --nfe, '4', --zero_init, '1', --cfg_zero_star, '1']
+    n4_fsu_pci: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.1,1.0', --pci, '1']
+    n4_fsu_tfr: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n4_jrr: [--cfg, '0.7', --nfe, '4', --jrr, '0.70,1.20,0.95']
+    n4_jrr_jrr1steps: [--cfg, '0.7', --nfe, '4', --jrr, '0.70,1.20,0.95', --jrr_steps, '1']
+    n4_pci: [--cfg, '0.7', --nfe, '4', --pci, '1']
+    n4_tfr: [--cfg, '0.7', --nfe, '4', --tfr, '1']
+    n4_tv-stepup: [--cfg, '0.7', --nfe, '4', --tv, stepup]
+    n4_tv-symmetric: [--cfg, '0.7', --nfe, '4', --tv, symmetric]
+    n4_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '4', --tv, symmetric_fix]
+    n4_zeroinit1: [--cfg, '0.7', --nfe, '4', --zero_init, '1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0, 1, 2]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id004 [cosyvoice2]
+  sets: &id005 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id006 [1, 2, 3, 4, 5, 6, 7]
+  methods: [cfg_zero_scale, jrr_cfg, mambo_g, prompt_consistency, sel_cfg_default, terminal_fitted_repair, tv_cfg, tv_cfg_stepup]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n2_fsu_pci: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1.0', --pci, '1']
+    n2_fsu_tfr: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1.0', --tfr, '1']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [fsu_mid]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [fsu_mid]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id007 [cosyvoice3]
+  sets: &id008 [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: &id009 [0]
+  methods: [sel_cfg_text]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id007
+  sets: *id008
+  seeds: *id009
+  methods:
+    n10_speakernull: [--cfg, '0.7', --nfe, '10', --cfg_branch, speaker]
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+    n3_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id010 [cosyvoice3]
+  sets: &id011 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id012 [0]
+  methods: [cfg_zero_init, cfg_zero_scale, fsu_n3, fsu_n4, jrr_cfg, mambo_g, official_n3, official_n4, prompt_consistency,
+    sel_cfg_default, teacher, terminal_fitted_repair, tv_cfg, tv_cfg_corrected, tv_cfg_stepup]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id010
+  sets: *id011
+  seeds: *id012
+  methods:
+    n10_fsu: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0']
+    n10_fsu_pci: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0', --pci, '1']
+    n10_fsu_tfr: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n10_jrr: [--cfg, '0.7', --nfe, '10', --jrr, '0.70,1.20,0.95']
+    n10_jrr_jrr3steps: [--cfg, '0.7', --nfe, '10', --jrr, '0.70,1.20,0.95', --jrr_steps, '3']
+    n10_pci: [--cfg, '0.7', --nfe, '10', --pci, '1']
+    n10_tfr: [--cfg, '0.7', --nfe, '10', --tfr, '1']
+    n10_tv-stepup: [--cfg, '0.7', --nfe, '10', --tv, stepup]
+    n10_tv-symmetric: [--cfg, '0.7', --nfe, '10', --tv, symmetric]
+    n10_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '10', --tv, symmetric_fix]
+    n2_cfgzero_zeroinit1: [--cfg, '0.7', --nfe, '2', --zero_init, '1', --cfg_zero_star, '1']
+    n2_fsu_pci: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1.0', --pci, '1']
+    n2_fsu_tfr: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n2_jrr_jrr1steps: [--cfg, '0.7', --nfe, '2', --jrr, '0.70,1.20,0.95', --jrr_steps, '1']
+    n2_mambo0.5: [--cfg, '0.7', --nfe, '2', --mambo_alpha, '0.5']
+    n2_mambo1: [--cfg, '0.7', --nfe, '2', --mambo_alpha, '1']
+    n2_mambo2: [--cfg, '0.7', --nfe, '2', --mambo_alpha, '2']
+    n3_fsu_pci: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.1,1.0', --pci, '1']
+    n3_fsu_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+    n3_fsu_tfr: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n3_jrr: [--cfg, '0.7', --nfe, '3', --jrr, '0.70,1.20,0.95']
+    n3_jrr_jrr1steps: [--cfg, '0.7', --nfe, '3', --jrr, '0.70,1.20,0.95', --jrr_steps, '1']
+    n3_pci: [--cfg, '0.7', --nfe, '3', --pci, '1']
+    n3_tfr: [--cfg, '0.7', --nfe, '3', --tfr, '1']
+    n3_tv-stepup: [--cfg, '0.7', --nfe, '3', --tv, stepup]
+    n3_tv-symmetric: [--cfg, '0.7', --nfe, '3', --tv, symmetric]
+    n3_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '3', --tv, symmetric_fix]
+    n4_fsu_pci: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.1,1.0', --pci, '1']
+    n4_fsu_tfr: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.1,1.0', --tfr, '1']
+    n4_jrr: [--cfg, '0.7', --nfe, '4', --jrr, '0.70,1.20,0.95']
+    n4_jrr_jrr1steps: [--cfg, '0.7', --nfe, '4', --jrr, '0.70,1.20,0.95', --jrr_steps, '1']
+    n4_pci: [--cfg, '0.7', --nfe, '4', --pci, '1']
+    n4_tfr: [--cfg, '0.7', --nfe, '4', --tfr, '1']
+    n4_tv-stepup: [--cfg, '0.7', --nfe, '4', --tv, stepup]
+    n4_tv-symmetric: [--cfg, '0.7', --nfe, '4', --tv, symmetric]
+    n4_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '4', --tv, symmetric_fix]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0, 1, 2]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2]
+  methods: [sel_cfg_text]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [fsu_mid, sel_cfg_text]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id013 [indextts2]
+  sets: &id014 [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: &id015 [0]
+  methods: [sel_cfg_text]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id013
+  sets: *id014
+  seeds: *id015
+  methods:
+    n10: [--cfg, '0.7', --nfe, '10']
+    n10_speakernull: [--cfg, '0.7', --nfe, '10', --cfg_branch, speaker]
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+    n3_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [cfg_zero_init, cfg_zero_scale, jrr_cfg, mambo_g, sel_cfg_default, terminal_fitted_repair, tv_cfg, tv_cfg_corrected,
+    tv_cfg_stepup]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.5-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --solver, mid1, --cfg_interval, '0.1,1']
+    n3_fsu_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0, 1, 2]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2]
+  methods: [sel_cfg_text]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [fsu_mid, sel_cfg_text]
+
+- decoders: [indextts2]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset]
+  seeds: [0]
+  methods: [guidance_interval]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id016 [glmtts]
+  sets: &id017 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id018 [0]
+  methods: [sel_cfg_default]
+
+- decoders: *id016
+  sets: *id017
+  seeds: *id018
+  methods:
+    n2_allnull_cfgzero: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_zero_star, '1']
+    n2_allnull_jrr: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --jrr, '0.70,1.20,0.95']
+    n2_allnull_mambo4: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --mambo_alpha, '4']
+    n2_allnull_pci: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --pci, '1']
+    n2_allnull_tv-stepup: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --tv, stepup]
+    n2_allnull_tv-symmetric: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --tv, symmetric]
+    n2_allnull_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --tv, symmetric_fix]
+    n2_allnull_zeroinit1: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --zero_init, '1']

@@ -1,0 +1,319 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: 'Step length and per-step guidance masks: first-step length t1, guidance masks and ramps, the threshold t* sweep,
+  explicit schedules, second-order solvers and restart variants (Sections V-C, V-D, Appendix E).'
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.1-1: [--cfg, '0.7', --t_span, '0,0.1,1']
+    grid0-0.1-1_fsu: [--cfg, '0.7', --t_span, '0,0.1,1', --cfg_interval, '0.1,1']
+    grid0-0.2-1: [--cfg, '0.7', --t_span, '0,0.2,1']
+    grid0-0.2-1_fsu: [--cfg, '0.7', --t_span, '0,0.2,1', --cfg_interval, '0.1,1']
+    grid0-0.3-1: [--cfg, '0.7', --t_span, '0,0.3,1']
+    grid0-0.3-1_fsu: [--cfg, '0.7', --t_span, '0,0.3,1', --cfg_interval, '0.1,1']
+    grid0-0.5-1: [--cfg, '0.7', --t_span, '0,0.5,1']
+    grid0-0.5-1_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --cfg_interval, '0.1,1']
+    grid0-0.7-1: [--cfg, '0.7', --t_span, '0,0.7,1']
+    grid0-0.7-1_fsu: [--cfg, '0.7', --t_span, '0,0.7,1', --cfg_interval, '0.1,1']
+    n10_interval0.2-0.8: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.2,0.8']
+    n10_interval0.2-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.2,1.0']
+    n10_interval0.3-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.3,1.0']
+    n10_interval1e-06-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '1e-06,1.0']
+    n1_heun: [--cfg, '0.7', --nfe, '1', --solver, heun]
+    n1_heun_fsu: [--cfg, '0.7', --nfe, '1', --solver, heun, --cfg_interval, '0.1,1']
+    n1_midpoint: [--cfg, '0.7', --nfe, '1', --solver, midpoint]
+    n2_heun: [--cfg, '0.7', --nfe, '2', --solver, heun]
+    n2_heun_fsu: [--cfg, '0.7', --nfe, '2', --solver, heun, --cfg_interval, '0.1,1']
+    n2_interval0.3-1: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.3,1.0']
+    n2_midpoint: [--cfg, '0.7', --nfe, '2', --solver, midpoint]
+    n2_midpoint_fsu: [--cfg, '0.7', --nfe, '2', --solver, midpoint, --cfg_interval, '0.1,1']
+    n2_ramp0.2: [--cfg, '0.7', --nfe, '2', --cfg_ramp, '0.2']
+    n2_ramp0.4: [--cfg, '0.7', --nfe, '2', --cfg_ramp, '0.4']
+    n3_interval0.2-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.2,1.0']
+    n3_ramp0.2: [--cfg, '0.7', --nfe, '3', --cfg_ramp, '0.2']
+    n3_ramp0.4: [--cfg, '0.7', --nfe, '3', --cfg_ramp, '0.4']
+    n4_interval0.3-1: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.3,1.0']
+    n4_interval1e-06-1: [--cfg, '0.7', --nfe, '4', --cfg_interval, '1e-06,1.0']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [fsu_mid]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id001 [cosyvoice2]
+  sets: &id002 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id003 [0]
+  methods: [unguided_n2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    grid0-0.012312-0.048943-0.108993-0.190983-0.292893-0.412215-0.54601-0.690983-1: [--cfg, '0.7', --t_span, '0.000000,0.012312,0.048943,0.108993,0.190983,0.292893,0.412215,0.546010,0.690983,1.000000']
+    grid0-0.012312-0.048943-0.108993-0.190983-0.292893-1: [--cfg, '0.7', --t_span, '0.000000,0.012312,0.048943,0.108993,0.190983,0.292893,1.000000']
+    grid0-0.012312-0.048943-0.108993-1: [--cfg, '0.7', --t_span, '0.000000,0.012312,0.048943,0.108993,1.000000']
+    grid0-0.012312-1: [--cfg, '0.7', --t_span, '0.000000,0.012312,1.000000']
+    grid0-0.1-0.25-0.5-1: [--cfg, '0.7', --t_span, '0,0.1,0.25,0.5,1']
+    grid0-0.1-0.25-0.5-1_onpath: [--cfg, '0.7', --t_span, '0,0.1,0.25,0.5,1', --sampler, a1]
+    grid0-0.25-0.5-0.75-1: [--cfg, '0.7', --t_span, '0,0.25,0.5,0.75,1']
+    grid0-0.25-0.5-0.75-1_onpath: [--cfg, '0.7', --t_span, '0,0.25,0.5,0.75,1', --sampler, a1]
+    grid0-0.5-0.75-0.9-1: [--cfg, '0.7', --t_span, '0,0.5,0.75,0.9,1']
+    grid0-0.5-0.75-0.9-1_onpath: [--cfg, '0.7', --t_span, '0,0.5,0.75,0.9,1', --sampler, a1]
+    grid0-0.5-0.85-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,0.85,1', --solver, mid1, --cfg_interval, '0.1,1']
+    n10_apg: [--cfg, '0.7', --nfe, '10', --cfg_mode, apg]
+    n10_interval0.03-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.03,1']
+    n10_interval0.15-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.15,1']
+    n10_interval0.5-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.5,1']
+    n10_unguided: [--cfg, '0', --nfe, '10']
+    n10_w0.3: [--cfg, '0.3', --nfe, '10']
+    n10_w0.5: [--cfg, '0.5', --nfe, '10']
+    n10_w1: [--cfg, '1.0', --nfe, '10']
+    n10_w1.5: [--cfg, '1.5', --nfe, '10']
+    n2_apg: [--cfg, '0.7', --nfe, '2', --cfg_mode, apg]
+    n2_interval0.2-0.8: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.2,0.8']
+    n2_restart0.5: [--cfg, '0.7', --nfe, '2', --restart_tr, '0.5']
+    n2_restart0.7: [--cfg, '0.7', --nfe, '2', --restart_tr, '0.7']
+    n2_w0.3: [--cfg, '0.3', --nfe, '2']
+    n2_w1: [--cfg, '1.0', --nfe, '2']
+    n2_w1.5: [--cfg, '1.5', --nfe, '2']
+    n3_apg: [--cfg, '0.7', --nfe, '3', --cfg_mode, apg]
+    n3_apg_onpath: [--cfg, '0.7', --nfe, '3', --sampler, a1, --cfg_mode, apg]
+    n3_interval0.2-0.8: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.2,0.8']
+    n3_onpath: [--cfg, '0.7', --nfe, '3', --sampler, a1]
+    n4_apg_onpath: [--cfg, '0.7', --nfe, '4', --sampler, a1, --cfg_mode, apg]
+    n4_onpath: [--cfg, '0.7', --nfe, '4', --sampler, a1]
+
+- decoders: &id004 [cosyvoice2]
+  sets: &id005 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id006 [0]
+  methods: [fsu_n4, official_n4]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    grid0-0.5-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --solver, mid1, --cfg_interval, '0.1,1']
+    n10_fsu: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0, 1, 2]
+  methods:
+    n2_interval1e-06-1: [--cfg, '0.7', --nfe, '2', --cfg_interval, '1e-06,1.0']
+    n3_interval1e-06-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '1e-06,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id007 [cosyvoice2]
+  sets: &id008 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id009 [1, 2, 3, 4, 5, 6, 7]
+  methods: [official_n4]
+
+- decoders: *id007
+  sets: *id008
+  seeds: *id009
+  methods:
+    grid0-0.1-0.25-0.5-1_onpath: [--cfg, '0.7', --t_span, '0,0.1,0.25,0.5,1', --sampler, a1]
+    n2_restart0.5: [--cfg, '0.7', --nfe, '2', --restart_tr, '0.5']
+    n2_restart0.7: [--cfg, '0.7', --nfe, '2', --restart_tr, '0.7']
+    n3_apg_onpath: [--cfg, '0.7', --nfe, '3', --sampler, a1, --cfg_mode, apg]
+    n3_onpath: [--cfg, '0.7', --nfe, '3', --sampler, a1]
+    n4_apg_onpath: [--cfg, '0.7', --nfe, '4', --sampler, a1, --cfg_mode, apg]
+    n4_onpath: [--cfg, '0.7', --nfe, '4', --sampler, a1]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods:
+    n2_interval1e-06-1: [--cfg, '0.7', --nfe, '2', --cfg_interval, '1e-06,1.0']
+    n3_interval1e-06-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '1e-06,1.0']
+
+- decoders: &id010 [cosyvoice2]
+  sets: &id011 [seedtts_hard_subset]
+  seeds: &id012 [0]
+  methods: [fsu_n4, official_n4]
+
+- decoders: *id010
+  sets: *id011
+  seeds: *id012
+  methods:
+    n10_fsu: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0']
+    n3_interval1e-06-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '1e-06,1.0']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n2_interval1e-06-1: [--cfg, '0.7', --nfe, '2', --cfg_interval, '1e-06,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.1-1: [--cfg, '0.7', --t_span, '0,0.1,1']
+    grid0-0.1-1_fsu: [--cfg, '0.7', --t_span, '0,0.1,1', --cfg_interval, '0.1,1']
+    grid0-0.2-1: [--cfg, '0.7', --t_span, '0,0.2,1']
+    grid0-0.2-1_fsu: [--cfg, '0.7', --t_span, '0,0.2,1', --cfg_interval, '0.1,1']
+    grid0-0.3-1: [--cfg, '0.7', --t_span, '0,0.3,1']
+    grid0-0.3-1_fsu: [--cfg, '0.7', --t_span, '0,0.3,1', --cfg_interval, '0.1,1']
+    grid0-0.5-1: [--cfg, '0.7', --t_span, '0,0.5,1']
+    grid0-0.5-1_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --cfg_interval, '0.1,1']
+    grid0-0.7-1: [--cfg, '0.7', --t_span, '0,0.7,1']
+    grid0-0.7-1_fsu: [--cfg, '0.7', --t_span, '0,0.7,1', --cfg_interval, '0.1,1']
+
+- decoders: &id013 [cosyvoice3]
+  sets: &id014 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id015 [0]
+  methods: [unguided_n2]
+
+- decoders: *id013
+  sets: *id014
+  seeds: *id015
+  methods:
+    grid0-0.5-0.85-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,0.85,1', --solver, mid1, --cfg_interval, '0.1,1']
+    n10_interval0.03-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.03,1']
+    n10_interval0.15-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.15,1']
+    n10_interval0.2-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.2,1']
+    n10_interval0.3-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.3,1']
+    n10_interval0.5-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.5,1']
+    n3_interval0.15-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.15,1']
+    n4_interval0.03-1: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.03,1']
+    n4_interval0.3-1: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.3,1']
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.5-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --solver, mid1, --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.3-1: [--cfg, '0.7', --t_span, '0,0.3,1']
+    grid0-0.3-1_fsu: [--cfg, '0.7', --t_span, '0,0.3,1', --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.2-1: [--cfg, '0.7', --t_span, '0,0.2,1']
+    grid0-0.2-1_fsu: [--cfg, '0.7', --t_span, '0,0.2,1', --cfg_interval, '0.1,1.0']
+    n10_interval0.03-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.03,1']
+    n10_interval0.15-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.15,1']
+    n10_interval0.3-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.3,1']
+    n10_interval0.5-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.5,1']
+    n3_interval0.5-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.5,1']
+    n4_interval0.3-1: [--cfg, '0.7', --nfe, '4', --cfg_interval, '0.3,1']
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    grid0-0.3-1: [--cfg, '0.7', --t_span, '0,0.3,1']
+    grid0-0.3-1_fsu: [--cfg, '0.7', --t_span, '0,0.3,1', --cfg_interval, '0.1,1']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset]
+  seeds: [0]
+  methods:
+    grid0-0.1-1: [--cfg, '0.7', --t_span, '0,0.1,1']
+    grid0-0.1-1_fsu: [--cfg, '0.7', --t_span, '0,0.1,1', --cfg_interval, '0.1,1']
+    grid0-0.2-1: [--cfg, '0.7', --t_span, '0,0.2,1']
+    grid0-0.2-1_fsu: [--cfg, '0.7', --t_span, '0,0.2,1', --cfg_interval, '0.1,1']
+    grid0-0.3-1: [--cfg, '0.7', --t_span, '0,0.3,1']
+    grid0-0.3-1_fsu: [--cfg, '0.7', --t_span, '0,0.3,1', --cfg_interval, '0.1,1']
+    grid0-0.5-1: [--cfg, '0.7', --t_span, '0,0.5,1']
+    grid0-0.5-1_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --cfg_interval, '0.1,1']
+    grid0-0.7-1: [--cfg, '0.7', --t_span, '0,0.7,1']
+    grid0-0.7-1_fsu: [--cfg, '0.7', --t_span, '0,0.7,1', --cfg_interval, '0.1,1']
+    n10_interval0.2-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.2,1']
+    n10_interval0.3-1: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.3,1']
+    n3_interval0.2-1: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.2,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16_fsu: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '0.1,1.0']
+    n16_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '0.2,0.8']
+    n16_interval0.3-1: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '0.3,1.0']
+    n16_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '1e-06,1.0']
+    n4_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '0.2,0.8']
+    n8_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.2,0.8']
+    n8_interval0.3-1: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.3,1.0']
+    n8_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '1e-06,1.0']
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.1-0.25-0.5-1: [--guidance-scale, '1.0', --t-span, '0,0.1,0.25,0.5,1']
+    grid0-0.1-0.25-0.5-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.1,0.25,0.5,1', --sampler, a1]
+    grid0-0.25-0.5-0.75-1: [--guidance-scale, '1.0', --t-span, '0,0.25,0.5,0.75,1']
+    grid0-0.25-0.5-0.75-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.25,0.5,0.75,1', --sampler, a1]
+    grid0-0.5-0.75-0.9-1: [--guidance-scale, '1.0', --t-span, '0,0.5,0.75,0.9,1']
+    grid0-0.5-0.75-0.9-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.5,0.75,0.9,1', --sampler, a1]
+    n2_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '2', --cfg-interval, '1e-06,1.0']
+    n4_onpath: [--guidance-scale, '1.0', --num-step, '4', --sampler, a1]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n4_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '1e-06,1.0']
+    n8_fsu: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.1,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    grid0-0.1-0.25-0.5-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.1,0.25,0.5,1', --sampler, a1]
+    n4_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '0.2,0.8']
+    n4_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '1e-06,1.0']
+    n4_onpath: [--guidance-scale, '1.0', --num-step, '4', --sampler, a1]
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n4_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '1e-06,1.0']
+    n8_fsu: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.1,1.0']
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n2_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '2', --cfg-interval, '1e-06,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_restart0.5: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.5']
+    n2_restart0.7: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.7']
+    n3: [--guidance-scale, '3.0', --num-step, '3']
+    n3_onpath: [--guidance-scale, '3.0', --num-step, '3', --sampler, a1]
+    n4_onpath: [--guidance-scale, '3.0', --num-step, '4', --sampler, a1]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n2_restart0.5: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.5']
+    n2_restart0.7: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.7']
+    n3: [--guidance-scale, '3.0', --num-step, '3']
+    n3_onpath: [--guidance-scale, '3.0', --num-step, '3', --sampler, a1]
+    n4_onpath: [--guidance-scale, '3.0', --num-step, '4', --sampler, a1]

@@ -1,0 +1,14 @@
+# downloaded or generated (see README)
+repos/
+ckpt/
+cache/
+data/raw/
+data/ckpt/
+data/cache/
+data/lists/
+data/subset_ids.txt
+out/
+logs/
+results/
+__pycache__/
+*.pyc

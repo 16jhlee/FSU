@@ -1,0 +1,145 @@
+diff --git a/flow/flow.py b/flow/flow.py
+index 758ac1a..95e082b 100644
+--- a/flow/flow.py
++++ b/flow/flow.py
+@@ -16,6 +16,8 @@ Flow Matching Wrapper for Streaming Inference.
+ Manages the DiT model initialization and the ODE sampling process.
+ """
+ 
++import math
++
+ import torch
+ from torch.nn import functional as F
+ from cosyvoice.utils.mask import make_pad_mask
+@@ -181,9 +183,11 @@ class Flow(torch.nn.Module):
+         step-by-step caching for streaming.
+         """
+         current_step2cache = {}
+-        
++
+         # Initial noise
+-        x = torch.randn_like(mel_cond_btd)
++        # noise_override: externally seeded noise (hash(utt|noise|k)), shape [1, T_max, D]
++        nz = getattr(self, 'noise_override', None)
++        x = torch.randn_like(mel_cond_btd) if nz is None else nz[:, :mel_cond_btd.shape[1], :].to(mel_cond_btd)
+         device = speech_token_bt.device
+ 
+         # Time scheduler setup
+@@ -191,6 +195,16 @@ class Flow(torch.nn.Module):
+         if self.t_scheduler == 'cosine':
+             t_span = 1 - torch.cos(t_span * 0.5 * torch.pi)
+         # Note: If other schedulers are needed, add elif blocks here.
++        # explicit schedule (repo time, 0 = noise)
++        tso = getattr(self, 't_span_override', None)
++        if tso is not None:
++            t_span = torch.tensor(tso, device=device, dtype=t_span.dtype)
++        if getattr(self, 'solver', 'euler') != 'euler' or getattr(self, 'cfg_branch', 'all') != 'all' \
++                or getattr(self, 'cfg_interval', None) is not None or getattr(self, 'cfg_steps', None) is not None \
++                or getattr(self, 'dump_states', None) is not None or getattr(self, 'external_rules', False):
++            assert last_step_cache is None, 'sampler options are for the non-streaming path'
++            return self._do_sample_options(x, t_span, speech_token_bt, condition_btd, padding_mask_bt,
++                                       spkr_embedding_normed, is_causal, block_pattern), current_step2cache
+ 
+         t_current = t_span[0]
+         dt = t_span[1] - t_span[0]
+@@ -261,4 +275,97 @@ class Flow(torch.nn.Module):
+                 dt = t_span[step + 1] - t_current
+ 
+         result_btd = sol[-1]
+-        return result_btd, current_step2cache
+\ No newline at end of file
++        return result_btd, current_step2cache
++
++    def _do_sample_options(self, x, t_span, speech_token_bt, condition_btd, padding_mask_bt, spkr_embedding_normed,
++                       is_causal, block_pattern):
++        """same network calls and CFG combination as do_sample, plus sampler options:
++        cfg_interval (tmin, tmax): w = 0 for evaluations at t outside [tmin, tmax] (FSU = (0.1, 1));
++        cfg_steps: per-step w list (Euler steps); cfg_branch: what the unconditional row erases —
++        'all' (official: condition + speaker embedding, tokens only if speech_token_cfg — False in the released
++        config, so the official branch is speaker-null), 'allnull' (tokens + condition + speaker embedding),
++        'speaker' (condition + speaker embedding, tokens kept), 'token' (tokens only); solver: 'euler' | 'midpoint' |
++        'mid1' (midpoint on the first step only); dump_states: list receiving dict(t, x, v, vc, vu) per evaluation.
++        external rules (Euler path), transcribed from the CosyVoice patch:
++        cfg_branch_switch_t (Sel-CFG def_text: all-null while t < it), mambo_alpha, cfg_zero_star, zero_init_steps,
++        tv_scales (TV-CFG g_k), tfr, jrr (gT, gS, gI), pci + prompt_frames (prompt block = first prompt_frames frames)."""
++        dump = getattr(self, 'dump_states', None)
++        br0 = getattr(self, 'cfg_branch', 'all')
++        iv = getattr(self, 'cfg_interval', None)
++        steps_w = getattr(self, 'cfg_steps', None)
++        sw = getattr(self, 'cfg_branch_switch_t', None)
++        mambo = getattr(self, 'mambo_alpha', None)
++        jrr = getattr(self, 'jrr', None)
++        tv = getattr(self, 'tv_scales', None)
++
++        def est(x, t, tok, cond, spk):
++            return self.estimator(middle_point_btd=x, condition_btd=cond, text=tok, time_step_1d=t[None],
++                                  padding_mask_bt=padding_mask_bt, spkr_emb_bd=spk, is_causal=is_causal,
++                                  block_pattern=block_pattern)
++
++        def uncond(x, t, br):
++            zero_tok = (br == 'all' and self.speech_token_cfg) or br in ('allnull', 'token')
++            tok = torch.zeros_like(speech_token_bt) if zero_tok else speech_token_bt
++            cond = torch.zeros_like(condition_btd) if br in ('all', 'allnull', 'speaker') else condition_btd
++            spk = torch.zeros_like(spkr_embedding_normed) if br in ('all', 'allnull', 'speaker') else spkr_embedding_normed
++            return est(x, t, tok, cond, spk)
++
++        def vel(x, t, w, t1=None):
++            vc = est(x, t, speech_token_bt, condition_btd, spkr_embedding_normed)
++            vu = None
++            if iv is not None and not (iv[0] <= float(t) <= iv[1]):
++                w = 0.0
++            if w != 0:
++                br = 'allnull' if sw is not None and float(t) < sw else br0
++                vu = uncond(x, t, br)
++                if mambo is not None:  # MAMBO-G (2508.03442 Eq.5-6)
++                    r = float(torch.norm((vc - vu).float()) / torch.norm(vu.float()))
++                    w = w * math.exp(-mambo * r)
++                if getattr(self, 'cfg_zero_star', False):  # CFG-Zero* s* = <v_c, v_u> / (||v_u||^2 + 1e-8)
++                    vc_f, vu_f = vc.float().flatten(1), vu.float().flatten(1)
++                    s = ((vc_f * vu_f).sum(1) / ((vu_f * vu_f).sum(1) + 1e-8)).view(-1, 1, 1)
++                    vu = (s * vu.float()).to(vu.dtype)
++                if jrr is not None:  # JRR-CFG (2606.25672 Eq.1-4, 11): text-only (speaker erased), speaker-only (tokens erased)
++                    v_text = uncond(x, t, 'speaker')
++                    v_spk = uncond(x, t, 'token')
++                    gT, gS, gI = jrr
++                    T, S = v_text - vu, v_spk - vu
++                    I = vc - v_text - v_spk + vu
++                    v = vc + gT * T + gS * S + gI * I
++                elif getattr(self, 'tfr', False):  # TFR (2607.07665 Def.1/Eq.15), straight path, D = x + (1-t) v
++                    t0f, t1f = float(t), float(t1)
++                    a = (1 - t1f) / (1 - t0f)
++                    r = a * t0f / t1f if t1f > 0 else 0.0
++                    Dc, Du = x + (1 - t0f) * vc, x + (1 - t0f) * vu
++                    x_next = a * x + (1 - a) * Dc + t1f * (r ** (1 + w) - r) * (Du - Dc)
++                    v = (x_next - x) / (t1f - t0f)
++                else:
++                    v = (1.0 + w) * vc - w * vu
++            else:
++                v = vc
++            if dump is not None:
++                dump.append(dict(t=float(t), x=x.detach().float().cpu(), v=v.detach().float().cpu(),
++                                 vc=vc.detach().float().cpu(), vu=None if vu is None else vu.detach().float().cpu()))
++            return v
++        solver = getattr(self, 'solver', 'euler')
++        # PCI (2610.04757 Eq.8): prompt block reset to t f_P + (1 - t) eps_P before every evaluation
++        n_prompt = min(getattr(self, 'prompt_frames', 0), x.shape[1]) if getattr(self, 'pci', False) else 0
++        if n_prompt:
++            eps_p, f_p = x[:, :n_prompt, :].clone(), condition_btd[:, :n_prompt, :self.mel_dim].to(x.dtype)
++        for i in range(len(t_span) - 1):
++            t0, t1 = t_span[i], t_span[i + 1]
++            dt = t1 - t0
++            w = self.inference_cfg_rate if steps_w is None else steps_w[i]
++            if tv is not None and w != 0:  # TV-CFG per-step scale g_k (w_k = g_k - 1)
++                w = tv[i] - 1.0
++            if n_prompt:
++                x = x.clone()
++                x[:, :n_prompt, :] = (1 - (1 - 1e-6) * t0) * eps_p + t0 * f_p
++            v1 = vel(x, t0, w, t1)
++            if i + 1 <= getattr(self, 'zero_init_steps', 0):  # CFG-Zero* zero-init
++                v1 = v1 * 0.
++            if solver == 'midpoint' or (solver == 'mid1' and i == 0):
++                x = x + dt * vel(x + 0.5 * dt * v1, t0 + 0.5 * dt, w)
++            else:
++                x = x + dt * v1
++        return x
+\ No newline at end of file

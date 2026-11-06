@@ -1,0 +1,110 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: First-step weight w1 swept with the second step at the official weight (Fig. 4), and the guidance weight w on
+  both steps.
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_w0.3: [--cfg, '0.3', --nfe, '2']
+    n2_w0.3_fsu: [--cfg, '0.3', --nfe, '2', --cfg_interval, '0.1,1']
+    n2_w0.5: [--cfg, '0.5', --nfe, '2']
+    n2_w0.5_fsu: [--cfg, '0.5', --nfe, '2', --cfg_interval, '0.1,1']
+    n2_w1: [--cfg, '1.0', --nfe, '2']
+    n2_w1.5: [--cfg, '1.5', --nfe, '2']
+    n2_w1.5_fsu: [--cfg, '1.5', --nfe, '2', --cfg_interval, '0.1,1']
+    n2_w1_fsu: [--cfg, '1.0', --nfe, '2', --cfg_interval, '0.1,1']
+    n3_w0.3: [--cfg, '0.3', --nfe, '3']
+    n3_w0.3_fsu: [--cfg, '0.3', --nfe, '3', --cfg_interval, '0.1,1']
+    n3_w0.5: [--cfg, '0.5', --nfe, '3']
+    n3_w0.5_fsu: [--cfg, '0.5', --nfe, '3', --cfg_interval, '0.1,1']
+    n3_w1: [--cfg, '1.0', --nfe, '3']
+    n3_w1.5: [--cfg, '1.5', --nfe, '3']
+    n3_w1.5_fsu: [--cfg, '1.5', --nfe, '3', --cfg_interval, '0.1,1']
+    n3_w1_fsu: [--cfg, '1.0', --nfe, '3', --cfg_interval, '0.1,1']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_w-0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.2,0.7']
+    n2_w-0.7_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.7,0.7']
+    n2_w-1_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-1.0,0.7']
+    n2_w0.2_0.3: [--nfe, '2', '--cfg_steps=0.2,0.3']
+    n2_w0.2_0.5: [--nfe, '2', '--cfg_steps=0.2,0.5']
+    n2_w0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.2,0.7']
+    n2_w0.2_1: [--nfe, '2', '--cfg_steps=0.2,1.0']
+    n2_w0.35_0.3: [--nfe, '2', '--cfg_steps=0.35,0.3']
+    n2_w0.35_0.5: [--nfe, '2', '--cfg_steps=0.35,0.5']
+    n2_w0.35_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w0.35_1: [--nfe, '2', '--cfg_steps=0.35,1.0']
+    n2_w0.7_0.3: [--nfe, '2', '--cfg_steps=0.7,0.3']
+    n2_w0.7_0.5: [--nfe, '2', '--cfg_steps=0.7,0.5']
+    n2_w0.7_1: [--nfe, '2', '--cfg_steps=0.7,1.0']
+    n2_w0_0.3: [--nfe, '2', '--cfg_steps=0,0.3']
+    n2_w0_0.5: [--nfe, '2', '--cfg_steps=0,0.5']
+    n2_w0_1: [--nfe, '2', '--cfg_steps=0,1.0']
+    n2_w1.05_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=1.05,0.7']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n2_w-0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.2,0.7']
+    n2_w-0.7_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.7,0.7']
+    n2_w-1_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-1.0,0.7']
+    n2_w0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.2,0.7']
+    n2_w0.35_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w1.05_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=1.05,0.7']
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_w-0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.2,0.7']
+    n2_w-0.7_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.7,0.7']
+    n2_w-1_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-1.0,0.7']
+    n2_w0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.2,0.7']
+    n2_w0.35_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w1.05_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=1.05,0.7']
+
+- decoders: &id001 [cosyvoice3]
+  sets: &id002 [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: &id003 [1, 2, 3, 4, 5, 6, 7]
+  methods: [tv_cfg_stepup]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n2_w-0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.2,0.7']
+    n2_w-0.7_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.7,0.7']
+    n2_w-1_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-1.0,0.7']
+    n2_w0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.2,0.7']
+    n2_w0.35_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w1.05_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=1.05,0.7']
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_w-0.2_0.7: [--nfe, '2', '--cfg_steps=-0.2,0.7']
+    n2_w-0.4333_0.7: [--nfe, '2', '--cfg_steps=-0.4333,0.7']
+    n2_w-0.7_0.7: [--nfe, '2', '--cfg_steps=-0.7,0.7']
+    n2_w-1_0.7: [--nfe, '2', '--cfg_steps=-1,0.7']
+    n2_w0.2_0.7: [--nfe, '2', '--cfg_steps=0.2,0.7']
+    n2_w1.05_0.7: [--nfe, '2', '--cfg_steps=1.05,0.7']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset]
+  seeds: [0]
+  methods:
+    n2_w-0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.2,0.7']
+    n2_w-0.43_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=-0.43,0.7']
+    n2_w0.2_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.2,0.7']
+    n2_w0.35_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w1.05_0.7: [--cfg, '0.7', --nfe, '2', '--cfg_steps=1.05,0.7']
+  quality: [dnsmos, nisqa, utmosv2]

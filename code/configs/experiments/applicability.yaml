@@ -1,0 +1,207 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: 'Text-conditioned and truncation-dominated decoders: F5-TTS and ZipVoice (Section VII).'
+runs:
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset]
+  seeds: [0]
+  methods:
+    n16_uniform: [--cfg, '2.0', --use_epss, '0', --nfe, '16', --sway, '0']
+    n16_uniform_fsu: [--cfg, '2.0', --use_epss, '0', --nfe, '16', --sway, '0', --cfg_interval, '0.1,1']
+    n8_uniform: [--cfg, '2.0', --use_epss, '0', --nfe, '8', --sway, '0']
+    n8_uniform_fsu: [--cfg, '2.0', --use_epss, '0', --nfe, '8', --sway, '0', --cfg_interval, '0.1,1']
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1: [--nfe, '1', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n2: [--nfe, '2', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n4: [--nfe, '4', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n32_fsu: [--cfg, '2.0', --sway, '-1', --use_epss, '0', --nfe, '32', --cfg_interval, '0.1,1']
+    n4_fsu: [--cfg, '2.0', --sway, '-1', --use_epss, '0', --nfe, '4', --cfg_interval, '0.1,1']
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16: [--nfe, '16', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n32: [--nfe, '32', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n8: [--nfe, '8', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16_fsu: [--cfg, '2.0', --sway, '-1', --use_epss, '0', --nfe, '16', --cfg_interval, '0.1,1']
+    n8_fsu: [--cfg, '2.0', --sway, '-1', --use_epss, '0', --nfe, '8', --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [f5tts]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n16: [--nfe, '16', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n32: [--nfe, '32', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n8: [--nfe, '8', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [f5tts]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n16_fsu: [--cfg, '2.0', --sway, '-1', --use_epss, '0', --nfe, '16', --cfg_interval, '0.1,1']
+    n8_fsu: [--cfg, '2.0', --sway, '-1', --use_epss, '0', --nfe, '8', --cfg_interval, '0.1,1']
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1: [--num-step, '1', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16_fsu: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '0.1,1.0']
+    n16_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '0.2,0.8']
+    n16_interval0.3-1: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '0.3,1.0']
+    n16_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '16', --cfg-interval, '1e-06,1.0']
+    n4_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '0.2,0.8']
+    n8_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.2,0.8']
+    n8_interval0.3-1: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.3,1.0']
+    n8_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '1e-06,1.0']
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2: [--num-step, '2', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16: [--num-step, '16', --guidance-scale, '1.0']
+    n8: [--num-step, '8', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    grid0-0.1-0.25-0.5-1: [--guidance-scale, '1.0', --t-span, '0,0.1,0.25,0.5,1']
+    grid0-0.1-0.25-0.5-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.1,0.25,0.5,1', --sampler, a1]
+    grid0-0.25-0.5-0.75-1: [--guidance-scale, '1.0', --t-span, '0,0.25,0.5,0.75,1']
+    grid0-0.25-0.5-0.75-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.25,0.5,0.75,1', --sampler, a1]
+    grid0-0.5-0.75-0.9-1: [--guidance-scale, '1.0', --t-span, '0,0.5,0.75,0.9,1']
+    grid0-0.5-0.75-0.9-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.5,0.75,0.9,1', --sampler, a1]
+    n2_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '2', --cfg-interval, '1e-06,1.0']
+    n4: [--num-step, '4', --guidance-scale, '1.0']
+    n4_onpath: [--guidance-scale, '1.0', --num-step, '4', --sampler, a1]
+    n4_pci: [--guidance-scale, '1.0', --num-step, '4', --pci, 'True']
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n4_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '1e-06,1.0']
+    n8_fsu: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.1,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    grid0-0.1-0.25-0.5-1_onpath: [--guidance-scale, '1.0', --t-span, '0,0.1,0.25,0.5,1', --sampler, a1]
+    n16: [--num-step, '16', --guidance-scale, '1.0']
+    n4: [--num-step, '4', --guidance-scale, '1.0']
+    n4_interval0.2-0.8: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '0.2,0.8']
+    n4_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '1e-06,1.0']
+    n4_onpath: [--guidance-scale, '1.0', --num-step, '4', --sampler, a1]
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n16: [--num-step, '16', --guidance-scale, '1.0']
+    n4: [--num-step, '4', --guidance-scale, '1.0']
+    n8: [--num-step, '8', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n2: [--num-step, '2', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n4_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '4', --cfg-interval, '1e-06,1.0']
+    n8_fsu: [--guidance-scale, '1.0', --num-step, '8', --cfg-interval, '0.1,1.0']
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n2_interval1e-06-1: [--guidance-scale, '1.0', --num-step, '2', --cfg-interval, '1e-06,1.0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1: [--num-step, '1', --guidance-scale, '3.0']
+    n2: [--num-step, '2', --guidance-scale, '3.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_restart0.5: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.5']
+    n2_restart0.7: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.7']
+    n3: [--guidance-scale, '3.0', --num-step, '3']
+    n3_onpath: [--guidance-scale, '3.0', --num-step, '3', --sampler, a1]
+    n4: [--num-step, '4', --guidance-scale, '3.0']
+    n4_onpath: [--guidance-scale, '3.0', --num-step, '4', --sampler, a1]
+    n4_pci: [--guidance-scale, '3.0', --num-step, '4', --pci, 'True']
+    n8: [--num-step, '8', --guidance-scale, '3.0']
+    n8_pci: [--guidance-scale, '3.0', --num-step, '8', --pci, 'True']
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n2: [--num-step, '2', --guidance-scale, '3.0']
+    n2_restart0.5: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.5']
+    n2_restart0.7: [--guidance-scale, '3.0', --num-step, '2', --restart-tr, '0.7']
+    n3: [--guidance-scale, '3.0', --num-step, '3']
+    n3_onpath: [--guidance-scale, '3.0', --num-step, '3', --sampler, a1]
+    n4: [--num-step, '4', --guidance-scale, '3.0']
+    n4_onpath: [--guidance-scale, '3.0', --num-step, '4', --sampler, a1]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n4: [--num-step, '4', --guidance-scale, '3.0']
+    n8: [--num-step, '8', --guidance-scale, '3.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]

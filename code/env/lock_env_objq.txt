@@ -1,0 +1,8 @@
+coloredlogs==15.0.1
+flatbuffers==25.12.19
+humanfriendly==10.0
+onnxruntime==1.23.2
+pyreadline3==3.5.6
+timm==1.0.30
+torchvision==0.20.1
+-e repos/UTMOSv2

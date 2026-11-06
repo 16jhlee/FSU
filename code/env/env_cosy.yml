@@ -1,4 +1,4 @@
-﻿name: env_cosy
+name: env_cosy
 channels:
   - conda-forge
   - defaults

@@ -1,0 +1,109 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: 'Two-step controls over eight noise seeds (Fig. 5): guided first step only, no guidance, matched first step,
+  FSU, FSU-Mid, and the unguided teachers that define the guidance axis.'
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_w0.7_0: [--nfe, '2', '--cfg_steps=0.7,0']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset100]
+  seeds: [0]
+  methods: [fsu_n2, official_n2]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset100]
+  seeds: [1]
+  methods: [fsu_n2, official_n2]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: [0, 1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n10_unguided: [--cfg, '0', --nfe, '10']
+  metrics: [wavlm, ecapa, eres2net]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n2_w0.7_0: [--nfe, '2', '--cfg_steps=0.7,0']
+
+- decoders: &id001 [cosyvoice3]
+  sets: &id002 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id003 [0]
+  methods: [unguided_n2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n10_unguided: [--cfg, '0', --nfe, '10']
+    n2_w0.7_0: [--nfe, '2', '--cfg_steps=0.7,0']
+
+- decoders: &id004 [cosyvoice3]
+  sets: &id005 [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: &id006 [1, 2, 3, 4, 5, 6, 7]
+  methods: [unguided_n2]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n10_unguided: [--cfg, '0', --nfe, '10']
+    n2_w0.7_0: [--nfe, '2', '--cfg_steps=0.7,0']
+
+- decoders: &id007 [indextts2]
+  sets: &id008 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id009 [0]
+  methods: [unguided_n2]
+
+- decoders: *id007
+  sets: *id008
+  seeds: *id009
+  methods:
+    n25_unguided: [--cfg, '0', --nfe, '25']
+    n2_w0.35_0.7: [--nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w0.7_0: [--nfe, '2', '--cfg_steps=0.7,0']
+
+- decoders: &id010 [indextts2]
+  sets: &id011 [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: &id012 [1, 2, 3, 4, 5, 6, 7]
+  methods: [unguided_n2]
+
+- decoders: *id010
+  sets: *id011
+  seeds: *id012
+  methods:
+    n25_unguided: [--cfg, '0', --nfe, '25']
+    n2_w0.35_0.7: [--nfe, '2', '--cfg_steps=0.35,0.7']
+    n2_w0.7_0: [--nfe, '2', '--cfg_steps=0.7,0']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n10_allnull: [--cfg, '0.7', --nfe, '10', --cfg_branch, allnull]
+    n10_unguided: [--cfg, '0.7', --nfe, '10', --cfg, '0']
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_unguided_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg, '0']
+    n2_w0.35_0.7_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, '--cfg_steps=0.35,0.7']
+    n2_w0.7_0_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, '--cfg_steps=0.7,0']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n10_allnull: [--cfg, '0.7', --nfe, '10', --cfg_branch, allnull]
+    n10_unguided: [--cfg, '0.7', --nfe, '10', --cfg, '0']
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+    n2_unguided_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg, '0']
+    n2_w0.35_0.7_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, '--cfg_steps=0.35,0.7']
+    n2_w0.7_0_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, '--cfg_steps=0.7,0']

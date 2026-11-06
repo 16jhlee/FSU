@@ -1,0 +1,27 @@
+diff --git a/src/infer.py b/src/infer.py
+index 1726fd8..5b88b8b 100644
+--- a/src/infer.py
++++ b/src/infer.py
+@@ -512,8 +512,10 @@ class DMOInference:
+         t = torch.linspace(0, 1, teacher_steps + 1, device=device, dtype=step_cond.dtype)
+         if sway_sampling_coef is not None:
+             t = t + sway_sampling_coef * (torch.cos(torch.pi / 2 * t) - 1 + t)
+-        t = t[:(t > teacher_stopping_time).float().argmax() + 2]
+-        t = t[:-1]
++        # teacher_stopping_time >= 1.0 -> full teacher ODE over all steps
++        if teacher_stopping_time < 1.0:
++            t = t[:(t > teacher_stopping_time).float().argmax() + 2]
++            t = t[:-1]
+         
+         # Solve ODE
+         trajectory = odeint(fn, y0, t, method="euler")
+@@ -529,6 +531,9 @@ class DMOInference:
+     def _student_sampling(self, x1, cond, text, student_start_step, verbose, sway_coeff = -1):
+         """Perform student model sampling."""
+         steps = torch.Tensor([0, 0.25, 0.5, 0.75])
++        # optional student time grid (pre-sway), set by caller for NFE sweeps
++        if getattr(self, 'student_steps_override', None) is not None:
++            steps = torch.Tensor(self.student_steps_override)
+         steps = steps + sway_coeff * (torch.cos(torch.pi / 2 * steps) - 1 + steps)
+         steps = steps[student_start_step:]
+         

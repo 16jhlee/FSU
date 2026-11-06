@@ -1,4 +1,4 @@
-﻿name: env_eval
+name: env_eval
 channels:
   - conda-forge
   - defaults

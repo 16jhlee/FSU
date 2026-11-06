@@ -1,17 +1,46 @@
 # Guidance at Pure Noise Erodes Speaker Similarity in Few-Step Token-Conditioned Flow-Matching TTS — code and listening samples
 
-Supplementary material for the IEEE/ACM TASLP submission.
+Supplementary material for the IEEE/ACM TASLP submission: `code/` runs every experiment of the paper and writes
+per-utterance results; `audio_samples/` holds listening samples (open `audio_samples/index.html`).
 
-| Folder | Content |
+## Code layout
+```
+code/
+├─ run.py                     python run.py list | show | generate | evaluate <experiment>
+├─ configs/
+│  ├─ methods.yaml            named sampling methods -> decoder-runner arguments
+│  └─ experiments/*.yaml      the runs of each experiment (decoder x test set x method x seed)
+├─ fsu/
+│  ├─ decoders/               runners of CosyVoice 2/3, IndexTTS-2, GLM-TTS, F5-TTS / DMOSpeech 2 (one Decoder interface)
+│  ├─ experiment.py           decoders, methods, runs, generation and evaluation queues
+│  ├─ datasets.py             test sets and the builders of their lists
+│  ├─ metrics.py              WER / CER, speaker similarity (WavLM, ECAPA, ERes2Net), UTMOS, prosody features
+│  ├─ quality.py              UTMOSv2, DNSMOS, NISQA
+│  ├─ probes/                 measurements on the networks themselves (closed-form checks, guidance magnitude and
+│  │                          decay, first-step deviation, branches, one-step outputs, streaming latency)
+│  ├─ assets.py               checkpoints and test data at pinned revisions
+│  └─ common.py               paths, seeds, list I/O, conda environments, GPU lock
+├─ patches/<repo>.diff        sampler-level patches to the upstream repositories (weights, losses, architectures unchanged)
+├─ setup/                     setup_windows.ps1, setup_linux.sh
+└─ env/                       pins.txt (upstream commits, model revisions), lock_<env>.txt, env_*.yml
+```
+
+## Experiments
+| File | Content |
 |---|---|
-| `code/scripts/` | runners for each decoder (`run_cosy.py`, `run_index.py`, `run_glm.py`, `run_f5.py`, `run_dmo.py`), generation/evaluation queues, metrics (`eval_metrics.py`, `objq_metrics.py`), one job file per experiment block (`e<k>_jobs.py`), analysis scripts, test-list builders |
-| `code/patches/` | sampler-level patches to the upstream repositories (time grid, CFG schedule, unconditional branch, solver, seeds); model weights, losses and architectures are not changed |
-| `code/setup/` | `setup_windows.ps1`, `setup_linux.sh`: clone the upstream repositories at the pinned commits, apply the patches, create the conda environments, download checkpoints and data |
-| `code/env/` | `pins.txt` (upstream commits and model revisions), `lock_<env>.txt` (pip freeze), `env_*.yml` (conda export) |
-| `audio_samples/` | listening samples; open `audio_samples/index.html` |
+| `nfe_sweep` | step-count sweeps and the localisation of the few-step loss (Sec. III-A, Fig. 3, Table X, App. A) |
+| `first_step_weight` | first-step weight w1 sweep (Fig. 4) and the guidance weight on both steps |
+| `controls` | two-step controls over eight noise seeds (Fig. 5) |
+| `step_schedules` | first-step length, guidance masks, threshold t*, schedules and solvers (Sec. V, App. E) |
+| `unconditional_branch` | all-null / speaker-null / token-null branches (Sec. V-E, Table XIII) |
+| `rule_comparison` | published guidance rules vs FSU / FSU-Mid on the analysis subsets (Tables I, IX) |
+| `full_test_sets` | full Seed-TTS-eval sets and LibriSpeech-PC (Tables II, V) |
+| `robustness` | languages, long text, streaming, short / noisy and cross-lingual prompts (Table VI) |
+| `seeds` | additional noise seeds (Table IV) |
+| `applicability` | F5-TTS and ZipVoice (Sec. VII) |
 
-## Methods in the code
-The proposed samplers are options of the existing runners (repository time convention: t = 0 is noise).
+## Methods
+The samplers are options of the decoder runners (repository time convention: t = 0 is noise).
 
 | Method | Runner arguments (two steps unless noted) |
 |---|---|
@@ -22,30 +51,33 @@ The proposed samplers are options of the existing runners (repository time conve
 | TV-CFG (corrected) | `--nfe 2 --tv symmetric_fix` |
 | Selective-CFG (input-text) | `--nfe 2 --cfg_branch speaker` |
 | MAMBO-G | `--nfe 2 --mambo_alpha 4` |
-| GLM-TTS all-null branch | `--cfg_branch allnull` (`run_glm.py`) |
-| CosyVoice2 streaming | add `--stream 1` |
+| GLM-TTS all-null branch | `--cfg_branch allnull` |
+| CosyVoice 2 streaming | add `--stream 1` |
 
-Noise is seeded per utterance (`--noise utt:<k>`, k = 0 unless stated), and the CosyVoice2/3 and GLM-TTS LLM speech tokens
-are generated once and cached (`--stage tokens`), so every decoder configuration sees the same tokens. The exact command
-lines of every configuration are in the job files (`e<k>_jobs.py`).
+Noise is seeded per utterance (`--noise utt:<k>`), and the LLM speech tokens (CosyVoice 2/3, GLM-TTS) and IndexTTS-2
+GPT conditions are generated once per utterance and cached, so every sampler setting decodes the same tokens.
 
-## Reproducing
-1. Run `setup/setup_windows.ps1` (or `setup/setup_linux.sh`): upstream repositories, environments, checkpoints and the
-   public test sets.
-2. Build the test lists: `scripts/make_subset.py` (analysis subset, seed 20261017) and `scripts/relocate.py`
-   (Seed-TTS-eval lists), then `build_long_lists.py`, `build_robust_lists.py`, `build_minimax_lists.py`,
-   `build_lspc_list.py`, `build_crossling_lists.py`.
-3. Generate and evaluate a block with its job file through the queues, for example
-   `python scripts/queue_gen.py e15_jobs <config>` and `python scripts/queue_eval.py e15_jobs <config>`
-   (the `chain_*.ps1` files show the order used). Runs are resumable (completion markers, skip-existing).
-4. The analysis scripts (`e<k>_analyze.py`) compute the paired statistics (bootstrap 10k, Wilcoxon, Holm).
+## Running
+1. `powershell -ExecutionPolicy Bypass -File setup\setup_windows.ps1` (or `bash setup/setup_linux.sh`) from `code/`:
+   upstream repositories at the pinned commits with the patches, conda environments, checkpoints, test data, test lists.
+2. In two terminals (`tools` environment):
+   ```
+   python run.py generate full_test_sets
+   python run.py evaluate full_test_sets
+   ```
+   Both are resumable. `python run.py show full_test_sets` lists the runs and their state.
+3. Per-utterance results: `out/<decoder>/<set>/<method>/seed<k>/_metrics/metrics.csv` (WER / CER, SIM per embedder,
+   UTMOS, durations), `acoustic.csv` (F0, speaking rate, spectral features), `objq.csv` (UTMOSv2, DNSMOS, NISQA) and
+   `emb_<embedder>.npz` (speaker embeddings). Pair runs by utterance to compare methods.
+4. Measurements on the decoder networks (they need the token caches of step 2, not generated audio):
+   `python -m fsu.probes list` shows each measurement and its command, `python -m fsu.probes run` runs them all
+   (timing measurements: `python -m fsu.probes run streaming_`). Outputs: `results/probes/<name>.csv`.
 
-Results were produced on Windows 11 with one RTX 4080 SUPER (16 GB). ZipVoice, DMOSpeech2, CosyVoice3 and GLM-TTS outputs were
-bit-exact on rerun with the same GPU and software; CosyVoice2 shows run-to-run GPU nondeterminism of up to ~6e-4 in the waveform
-on some utterances. A few orchestration scripts (`chain_*.ps1`, `v9_*`, `v8_dom_run.py`, `build_lspc_list.py`) contain
-absolute paths of the original machine and need editing before use.
+The results were produced on Windows 11 with one RTX 4080 SUPER (16 GB). CosyVoice 3, GLM-TTS, ZipVoice and DMOSpeech 2
+outputs were bit-exact on rerun with the same GPU and software; CosyVoice 2 shows run-to-run GPU nondeterminism of up to
+~6e-4 in the waveform on some utterances.
 
 ## Data
-All data and checkpoints are public. Seed-TTS-eval (https://github.com/BytedanceSpeech/seed-tts-eval), the MiniMax
-multilingual test set (CC-BY-SA-4.0), LibriSpeech test-clean / LibriSpeech-PC (CC-BY-4.0) and MUSAN noise are downloaded by
-the setup. Seed-TTS-eval audio is not redistributed in the samples.
+All data and checkpoints are public and downloaded by the setup: Seed-TTS-eval
+(https://github.com/BytedanceSpeech/seed-tts-eval), the MiniMax multilingual test set (CC-BY-SA-4.0), LibriSpeech
+test-clean / LibriSpeech-PC (CC-BY-4.0) and MUSAN. Seed-TTS-eval audio is not redistributed in the samples.

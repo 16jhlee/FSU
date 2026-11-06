@@ -1,0 +1,38 @@
+# Sampling methods: name -> decoder-runner arguments (CosyVoice 2/3, IndexTTS-2, GLM-TTS runners), or a mapping
+# {decoder: arguments} where the setting differs per decoder. Repository time: t = 0 is noise. Guidance weight
+# w = 0.7 is the official value of all four decoders.
+
+# official classifier-free guidance on the decoder's official grid
+official_n1: [--cfg, 0.7, --nfe, 1]
+official_n2: [--cfg, 0.7, --nfe, 2]
+official_n3: [--cfg, 0.7, --nfe, 3]
+official_n4: [--cfg, 0.7, --nfe, 4]
+teacher:
+  cosyvoice2: [--cfg, 0.7, --nfe, 10]
+  cosyvoice3: [--cfg, 0.7, --nfe, 10]
+  glmtts: [--cfg, 0.7, --nfe, 10]
+  indextts2: [--cfg, 0.7, --nfe, 25]
+
+# first-step unguided sampling (FSU): no guidance on steps that start below t* = 0.1
+fsu_n2: [--cfg, 0.7, --nfe, 2, --cfg_interval, "0.1,1"]
+fsu_n3: [--cfg, 0.7, --nfe, 3, --cfg_interval, "0.1,1"]
+fsu_n4: [--cfg, 0.7, --nfe, 4, --cfg_interval, "0.1,1"]
+# FSU-Mid: one midpoint step, unguided evaluation at t = 0 and guided evaluation at t = 0.5 (3 network calls)
+fsu_mid: [--cfg, 0.7, --nfe, 1, --solver, midpoint, --cfg_interval, "0.1,1"]
+
+# unguided sampling
+unguided_n2: [--cfg, 0, --nfe, 2]
+
+# published guidance rules, two steps, values as in the rule comparison (not re-tuned)
+guidance_interval: [--cfg, 0.7, --nfe, 2, --cfg_interval, "0.1,0.9"]
+sel_cfg_text: [--cfg, 0.7, --nfe, 2, --cfg_branch, speaker]                           # Selective-CFG, input-text branch
+sel_cfg_default: [--cfg, 0.7, --nfe, 2, --cfg_branch, speaker, --branch_switch_t, 0.08]
+cfg_zero_scale: [--cfg, 0.7, --nfe, 2, --cfg_zero_star, 1]                            # CFG-Zero*, optimised scale
+cfg_zero_init: [--cfg, 0.7, --nfe, 2, --zero_init, 1]                                 # CFG-Zero*, zero-init
+tv_cfg: [--cfg, 0.7, --nfe, 2, --tv, symmetric]                                       # TV-CFG as released
+tv_cfg_corrected: [--cfg, 0.7, --nfe, 2, --tv, symmetric_fix]                         # TV-CFG, corrected normalisation
+tv_cfg_stepup: [--cfg, 0.7, --nfe, 2, --tv, stepup]
+mambo_g: [--cfg, 0.7, --nfe, 2, --mambo_alpha, 4]
+terminal_fitted_repair: [--cfg, 0.7, --nfe, 2, --tfr, 1]
+jrr_cfg: [--cfg, 0.7, --nfe, 2, --jrr, "0.70,1.20,0.95"]
+prompt_consistency: [--cfg, 0.7, --nfe, 2, --pci, 1]

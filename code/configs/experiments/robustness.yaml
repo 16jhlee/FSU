@@ -1,0 +1,170 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: Other languages, long texts (offline and streaming), short and noisy prompts, cross-lingual prompts and streaming
+  chunk sizes (Section VI-B, Table VI).
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [crossling_en2en, crossling_en2zh, crossling_ko2en, crossling_zh2en, crossling_zh2zh]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+
+- decoders: [cosyvoice2]
+  sets: [crossling_en2en, crossling_en2zh, crossling_ko2en, crossling_zh2en, crossling_zh2zh, minimax_de]
+  seeds: [0]
+  methods: [fsu_n3, official_n3]
+
+- decoders: [cosyvoice2]
+  sets: [crossling_en2ko, crossling_ko2ko]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice2]
+  sets: [crossling_en2ko, crossling_ko2ko, minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [fsu_n3, official_n3]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice2]
+  sets: [long_en]
+  seeds: [0]
+  methods:
+    n10_stream_hop100: [--cfg, '0.7', --nfe, '10', --stream, '1', --stream_hop, '100']
+    n10_stream_hop25: [--cfg, '0.7', --nfe, '10', --stream, '1', --stream_hop, '25']
+    n10_stream_hop50: [--cfg, '0.7', --nfe, '10', --stream, '1', --stream_hop, '50']
+    n2_fsu_stream_hop100: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1', --stream, '1', --stream_hop, '100']
+    n2_fsu_stream_hop25: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1', --stream, '1', --stream_hop, '25']
+    n2_fsu_stream_hop50: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1', --stream, '1', --stream_hop, '50']
+    n2_stream_hop100: [--cfg, '0.7', --nfe, '2', --stream, '1', --stream_hop, '100']
+    n2_stream_hop25: [--cfg, '0.7', --nfe, '2', --stream, '1', --stream_hop, '25']
+    n2_stream_hop50: [--cfg, '0.7', --nfe, '2', --stream, '1', --stream_hop, '50']
+
+- decoders: [cosyvoice2]
+  sets: [long_en, long_zh]
+  seeds: [0]
+  methods:
+    n1_midpoint_fsu_stream: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --stream, '1']
+    n2_mambo4_stream: [--cfg, '0.7', --nfe, '2', --stream, '1', --mambo_alpha, '4']
+    n2_speakernull_stream: [--cfg, '0.7', --nfe, '2', --stream, '1', --cfg_branch, speaker]
+    n2_stream_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '2', --stream, '1', --tv, symmetric_fix]
+
+- decoders: &id001 [cosyvoice2]
+  sets: &id002 [long_en, long_zh]
+  seeds: &id003 [0]
+  methods: [fsu_n3, official_n3]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n10_stream: [--cfg, '0.7', --nfe, '10', --stream, '1']
+    n2_fsu_stream: [--cfg, '0.7', --nfe, '2', --cfg_interval, '0.1,1', --stream, '1']
+    n2_stream: [--cfg, '0.7', --nfe, '2', --stream, '1']
+    n3_fsu_stream: [--cfg, '0.7', --nfe, '3', --cfg_interval, '0.1,1', --stream, '1']
+    n3_stream: [--cfg, '0.7', --nfe, '3', --stream, '1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [long_en, long_zh, minimax_de, prompt_10s, prompt_1s, prompt_3s, prompt_snr10dB, prompt_snr20dB]
+  seeds: [0]
+  methods: [fsu_mid, mambo_g, sel_cfg_text, tv_cfg_corrected]
+
+- decoders: [cosyvoice2]
+  sets: [long_en, long_zh, minimax_de, prompt_10s, prompt_1s, prompt_3s, prompt_snr10dB, prompt_snr20dB]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice2]
+  sets: [minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [prompt_10s, prompt_1s, prompt_3s, prompt_snr10dB, prompt_snr20dB]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods: [fsu_n2, official_n2, teacher]
+
+- decoders: [cosyvoice3]
+  sets: [crossling_en2en, crossling_en2zh, crossling_ko2en, crossling_zh2en, crossling_zh2zh]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+
+- decoders: [cosyvoice3]
+  sets: [crossling_en2en, crossling_en2zh, crossling_ko2en, crossling_zh2en, crossling_zh2zh, minimax_de]
+  seeds: [0]
+  methods: [fsu_n3, official_n3]
+
+- decoders: [cosyvoice3]
+  sets: [crossling_en2ko, crossling_ko2ko]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice3]
+  sets: [crossling_en2ko, crossling_ko2ko, minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [fsu_n3, official_n3]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice3]
+  sets: [minimax_de]
+  seeds: [0]
+  methods: [fsu_mid, mambo_g, sel_cfg_text, tv_cfg_corrected]
+
+- decoders: [cosyvoice3]
+  sets: [minimax_de]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice3]
+  sets: [minimax_ja, minimax_ko]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  metrics: [wer, cer2, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id004 [glmtts]
+  sets: &id005 [minimax_de]
+  seeds: &id006 [0]
+  methods: [mambo_g, tv_cfg_corrected]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_allnull_mambo4: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --mambo_alpha, '4']
+    n2_allnull_tv-symmetric-corrected: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --tv, symmetric_fix]
+
+- decoders: &id007 [glmtts]
+  sets: &id008 [minimax_de]
+  seeds: &id009 [0]
+  methods: [fsu_mid, fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id007
+  sets: *id008
+  seeds: *id009
+  methods:
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]

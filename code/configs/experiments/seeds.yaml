@@ -1,0 +1,67 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: Noise seeds 1 and 2 (three-seed check, Table IV) and the Selective-CFG + FSU runs over eight seeds.
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2]
+  methods:
+    grid0-0.5-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --solver, mid1, --cfg_interval, '0.1,1']
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id001 [cosyvoice3]
+  sets: &id002 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id003 [1, 2]
+  methods: [fsu_n3, official_n3]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    grid0-0.5-1_midpoint1st_fsu: [--cfg, '0.7', --t_span, '0,0.5,1', --solver, mid1, --cfg_interval, '0.1,1']
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods:
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+
+- decoders: &id004 [indextts2]
+  sets: &id005 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id006 [1, 2]
+  methods: [fsu_n3, official_n3]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods:
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2]
+  methods: [fsu_mid, fsu_n2, official_n2]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset100]
+  seeds: [1]
+  methods: [official_n2]

@@ -1,0 +1,386 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: 'Step-count sweeps: the few-step SIM loss and where it comes from (Section III-A, Fig. 3, Table X, Appendix A),
+  with eight noise seeds of the CosyVoice 2 / ZipVoice sweeps for the output geometry.'
+runs:
+
+- decoders: &id001 [cosyvoice2]
+  sets: &id002 [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: &id003 [0]
+  methods: [official_n1]
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n5: [--nfe, '5', --cfg, '0.7']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [official_n2, official_n3, teacher]
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1_fsu: [--cfg, '0.7', --nfe, '1', --cfg_interval, '0.1,1']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n12: [--cfg, '0.7', --nfe, '12']
+    n12_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '12']
+    n12_unguided: [--cfg, '0', --nfe, '12']
+    n25: [--cfg, '0.7', --nfe, '25']
+    n25_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '25']
+    n25_unguided: [--cfg, '0', --nfe, '25']
+    n3_unguided: [--cfg, '0', --nfe, '3']
+    n4_unguided: [--cfg, '0', --nfe, '4']
+    n6: [--cfg, '0.7', --nfe, '6']
+    n6_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '6']
+    n6_unguided: [--cfg, '0', --nfe, '6']
+    n8: [--cfg, '0.7', --nfe, '8']
+    n8_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '8']
+    n8_unguided: [--cfg, '0', --nfe, '8']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2]
+  methods: [official_n2, official_n3, teacher]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id004 [cosyvoice2]
+  sets: &id005 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id006 [1, 2, 3, 4, 5, 6, 7]
+  methods: [fsu_n4]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n8: [--cfg, '0.7', --nfe, '8']
+    n8_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '8']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [official_n2, official_n3]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [teacher]
+  metrics: [wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_full]
+  seeds: [0]
+  methods:
+    n10_officialnoise: [--nfe, '10', --cfg, '0.7', --noise, default]
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: &id007 [cosyvoice3]
+  sets: &id008 [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: &id009 [0]
+  methods: [fsu_n4, official_n1, official_n4]
+
+- decoders: *id007
+  sets: *id008
+  seeds: *id009
+  methods:
+    n10_fsu: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1.0']
+    n1_fsu: [--cfg, '0.7', --nfe, '1', --cfg_interval, '0.1,1']
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [official_n3]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [fsu_n3]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0, 1, 2]
+  methods: [fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [fsu_n2, official_n2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [teacher]
+  metrics: [wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_n3]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id010 [indextts2]
+  sets: &id011 [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: &id012 [0]
+  methods: [fsu_n4, official_n1, official_n4]
+
+- decoders: *id010
+  sets: *id011
+  seeds: *id012
+  methods:
+    n1_fsu: [--cfg, '0.7', --nfe, '1', --cfg_interval, '0.1,1']
+    n25_fsu: [--cfg, '0.7', --nfe, '25', --cfg_interval, '0.1,1']
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [official_n3]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id013 [indextts2]
+  sets: &id014 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id015 [0]
+  methods: [unguided_n2]
+
+- decoders: *id013
+  sets: *id014
+  seeds: *id015
+  methods:
+    n12: [--cfg, '0.7', --nfe, '12']
+    n12_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '12']
+    n12_unguided: [--cfg, '0', --nfe, '12']
+    n25_unguided: [--cfg, '0', --nfe, '25']
+    n3_unguided: [--cfg, '0', --nfe, '3']
+    n4_unguided: [--cfg, '0', --nfe, '4']
+    n6: [--cfg, '0.7', --nfe, '6']
+    n6_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '6']
+    n6_unguided: [--cfg, '0', --nfe, '6']
+    n8: [--cfg, '0.7', --nfe, '8']
+    n8_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '8']
+    n8_unguided: [--cfg, '0', --nfe, '8']
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods: [fsu_n3]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0, 1, 2]
+  methods: [fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id016 [indextts2]
+  sets: &id017 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id018 [1, 2, 3, 4, 5, 6, 7]
+  methods: [fsu_n4, official_n4]
+
+- decoders: *id016
+  sets: *id017
+  seeds: *id018
+  methods:
+    n8: [--cfg, '0.7', --nfe, '8']
+    n8_fsu: [--cfg, '0.7', --cfg_interval, '0.1,1', --nfe, '8']
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [fsu_n2, official_n2]
+
+- decoders: [indextts2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [3, 4, 5, 6, 7]
+  methods: [teacher]
+  metrics: [wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_n3]
+
+- decoders: [indextts2]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods: [fsu_n2, official_n2, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id019 [glmtts]
+  sets: &id020 [seedtts_en_subset]
+  seeds: &id021 [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n1, official_n2, official_n3, teacher, unguided_n2]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id019
+  sets: *id020
+  seeds: *id021
+  methods:
+    n10_fsu: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1']
+    n10_unguided: [--cfg, '0.7', --nfe, '10', --cfg, '0']
+    n3_unguided: [--cfg, '0.7', --nfe, '3', --cfg, '0']
+    n4_unguided: [--cfg, '0.7', --nfe, '4', --cfg, '0']
+    n5: [--cfg, '0.7', --nfe, '5']
+    n8_unguided: [--cfg, '0.7', --nfe, '8', --cfg, '0']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1_unguided: [--cfg, '0.7', --nfe, '1', --cfg, '0']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods: [fsu_mid, fsu_n2, official_n2]
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset100, seedtts_zh_subset100]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods: [teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id022 [glmtts]
+  sets: &id023 [seedtts_zh_subset]
+  seeds: &id024 [0]
+  methods: [unguided_n2]
+
+- decoders: *id022
+  sets: *id023
+  seeds: *id024
+  methods:
+    n3_unguided: [--cfg, '0.7', --nfe, '3', --cfg, '0']
+    n4_unguided: [--cfg, '0.7', --nfe, '4', --cfg, '0']
+    n8_unguided: [--cfg, '0.7', --nfe, '8', --cfg, '0']
+
+- decoders: &id025 [glmtts]
+  sets: &id026 [seedtts_zh_subset]
+  seeds: &id027 [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n1, official_n2, official_n3, teacher]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id025
+  sets: *id026
+  seeds: *id027
+  methods:
+    n10_fsu: [--cfg, '0.7', --nfe, '10', --cfg_interval, '0.1,1']
+    n5: [--cfg, '0.7', --nfe, '5']
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1: [--nfe, '1', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n2: [--nfe, '2', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n4: [--nfe, '4', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [f5tts]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16: [--nfe, '16', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n32: [--nfe, '32', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n8: [--nfe, '8', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [f5tts]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n16: [--nfe, '16', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n32: [--nfe, '32', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+    n8: [--nfe, '8', --cfg, '2.0', --sway, '-1', --use_epss, '0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1: [--num-step, '1', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2: [--num-step, '2', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n16: [--num-step, '16', --guidance-scale, '1.0']
+    n4: [--num-step, '4', --guidance-scale, '1.0']
+    n8: [--num-step, '8', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n16: [--num-step, '16', --guidance-scale, '1.0']
+    n4: [--num-step, '4', --guidance-scale, '1.0']
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n16: [--num-step, '16', --guidance-scale, '1.0']
+    n4: [--num-step, '4', --guidance-scale, '1.0']
+    n8: [--num-step, '8', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n2: [--num-step, '2', --guidance-scale, '1.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n1: [--num-step, '1', --guidance-scale, '3.0']
+    n2: [--num-step, '2', --guidance-scale, '3.0']
+    n4: [--num-step, '4', --guidance-scale, '3.0']
+    n8: [--num-step, '8', --guidance-scale, '3.0']
+  metrics: [wer, wavlm, ecapa, eres2net, campp, utmos]
+
+- decoders: [zipvoice_distill]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n2: [--num-step, '2', --guidance-scale, '3.0']
+    n4: [--num-step, '4', --guidance-scale, '3.0']

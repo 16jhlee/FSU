@@ -1,0 +1,97 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: 'What the unconditional branch removes: all-null, speaker-null and token-null branches (Section V-E, Table XIII).'
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n10_fsu_speakernull: [--cfg, '0.7', --nfe, '10', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+    n10_fsu_tokennull: [--cfg, '0.7', --nfe, '10', --cfg_branch, token, --cfg_interval, '0.1,1']
+    n10_tokennull: [--cfg, '0.7', --nfe, '10', --cfg_branch, token]
+    n2_fsu_tokennull: [--cfg, '0.7', --nfe, '2', --cfg_branch, token, --cfg_interval, '0.1,1']
+    n2_tokennull: [--cfg, '0.7', --nfe, '2', --cfg_branch, token]
+    n3_fsu_tokennull: [--cfg, '0.7', --nfe, '3', --cfg_branch, token, --cfg_interval, '0.1,1']
+    n3_tokennull: [--cfg, '0.7', --nfe, '3', --cfg_branch, token]
+
+- decoders: &id001 [cosyvoice2]
+  sets: &id002 [seedtts_en_subset, seedtts_hard_subset, seedtts_zh_subset]
+  seeds: &id003 [0]
+  methods: [sel_cfg_text]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n10_speakernull: [--cfg, '0.7', --nfe, '10', --cfg_branch, speaker]
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+    n3_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n3_fsu_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id004 [cosyvoice2]
+  sets: &id005 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id006 [1, 2]
+  methods: [sel_cfg_text]
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+  metrics: [wer, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_en_subset, seedtts_zh_subset]
+  seeds: [1, 2, 3, 4, 5, 6, 7]
+  methods:
+    n2_fsu_tokennull: [--cfg, '0.7', --nfe, '2', --cfg_branch, token, --cfg_interval, '0.1,1']
+    n2_tokennull: [--cfg, '0.7', --nfe, '2', --cfg_branch, token]
+
+- decoders: &id007 [cosyvoice2]
+  sets: &id008 [seedtts_en_subset, seedtts_zh_subset]
+  seeds: &id009 [3, 4, 5, 6, 7]
+  methods: [sel_cfg_text]
+
+- decoders: *id007
+  sets: *id008
+  seeds: *id009
+  methods:
+    n2_fsu_speakernull: [--cfg, '0.7', --nfe, '2', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_hard_subset]
+  seeds: [0]
+  methods:
+    n3_fsu_speakernull: [--cfg, '0.7', --nfe, '3', --cfg_branch, speaker, --cfg_interval, '0.1,1']
+
+- decoders: [glmtts]
+  sets: [seedtts_en_subset]
+  seeds: [0]
+  methods:
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+    n3_allnull: [--cfg, '0.7', --nfe, '3', --cfg_branch, allnull]
+    n3_fsu_allnull: [--cfg, '0.7', --nfe, '3', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [glmtts]
+  sets: [seedtts_zh_subset]
+  seeds: [0]
+  methods:
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+    n3_allnull: [--cfg, '0.7', --nfe, '3', --cfg_branch, allnull]
+    n3_fsu_allnull: [--cfg, '0.7', --nfe, '3', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]

@@ -1,0 +1,163 @@
+# Runs of this experiment: every decoder x set x method x seed of a group. Method names in a list refer to
+# configs/methods.yaml; inline methods give the decoder-runner arguments. Default metrics: WER, SIM
+# (WavLM, ECAPA, ERes2Net), UTMOS for seed 0 (+ SenseVoice CER for ko/ja), SIM only for seeds > 0.
+description: Full Seed-TTS-eval test sets and LibriSpeech-PC, two steps (Table II, Table V).
+runs:
+
+- decoders: [cosyvoice2]
+  sets: [librispeech_pc, seedtts_en_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice2]
+  sets: [librispeech_pc, seedtts_en_full, seedtts_hard_full]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_hard_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice2]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [librispeech_pc, seedtts_en_full, seedtts_hard_full]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+
+- decoders: [cosyvoice3]
+  sets: [librispeech_pc, seedtts_hard_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, official_n2, teacher]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_en_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_hard_full]
+  seeds: [0]
+  methods: [fsu_n3, official_n3]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [cosyvoice3]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [librispeech_pc, seedtts_en_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [indextts2]
+  sets: [librispeech_pc, seedtts_en_full, seedtts_hard_full]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+
+- decoders: [indextts2]
+  sets: [seedtts_hard_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+
+- decoders: [indextts2]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [mambo_g, sel_cfg_text, tv_cfg_corrected]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+
+- decoders: [indextts2]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [glmtts]
+  sets: [librispeech_pc]
+  seeds: [0]
+  methods:
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+
+- decoders: [glmtts]
+  sets: [librispeech_pc, seedtts_en_full]
+  seeds: [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: [glmtts]
+  sets: [librispeech_pc, seedtts_en_full, seedtts_hard_full]
+  seeds: [0]
+  methods: [mambo_g, tv_cfg_corrected]
+
+- decoders: [glmtts]
+  sets: [seedtts_en_full]
+  seeds: [0]
+  methods:
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: &id001 [glmtts]
+  sets: &id002 [seedtts_hard_full]
+  seeds: &id003 [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  quality: [dnsmos, utmosv2]
+
+- decoders: *id001
+  sets: *id002
+  seeds: *id003
+  methods:
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+  quality: [dnsmos, utmosv2]
+
+- decoders: [glmtts]
+  sets: [seedtts_zh_full]
+  seeds: [0]
+  methods: [mambo_g, tv_cfg_corrected]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+
+- decoders: &id004 [glmtts]
+  sets: &id005 [seedtts_zh_full]
+  seeds: &id006 [0]
+  methods: [fsu_mid, fsu_n2, fsu_n3, official_n2, official_n3, teacher]
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]
+
+- decoders: *id004
+  sets: *id005
+  seeds: *id006
+  methods:
+    n1_midpoint_fsu_allnull: [--cfg, '0.7', --nfe, '1', --solver, midpoint, --cfg_interval, '0.1,1', --cfg_branch, allnull]
+    n2_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull]
+    n2_fsu_allnull: [--cfg, '0.7', --nfe, '2', --cfg_branch, allnull, --cfg_interval, '0.1,1']
+  metrics: [wer, werwh, wavlm, ecapa, eres2net, utmos]
+  quality: [dnsmos, nisqa, utmosv2]

@@ -1,4 +1,4 @@
-﻿name: env_zip
+name: env_zip
 channels:
   - conda-forge
   - defaults

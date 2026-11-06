@@ -1,4 +1,4 @@
-﻿name: env_f5dmo
+name: env_f5dmo
 channels:
   - conda-forge
   - defaults
