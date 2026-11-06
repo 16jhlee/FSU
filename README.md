@@ -1,6 +1,6 @@
 # Guidance at Pure Noise Erodes Speaker Similarity in Few-Step Token-Conditioned Flow-Matching TTS — code and listening samples
 
-Supplementary material for the IEEE/ACM TASLP submission: `code/` runs every experiment of the paper and writes
+Supplementary material for the IEEE TASLP submission: `code/` runs every experiment of the paper and writes
 per-utterance results; `audio_samples/` holds listening samples (open `audio_samples/index.html`).
 
 ## Code layout
