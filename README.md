@@ -1,7 +1,25 @@
-# Guidance at Pure Noise Erodes Speaker Similarity in Few-Step Token-Conditioned Flow-Matching TTS — code and listening samples
+# Guidance at Pure Noise Erodes Speaker Similarity in Few-Step Token-Conditioned Flow-Matching TTS
 
-Supplementary material for the IEEE TASLP submission: `code/` runs every experiment of the paper and writes
-per-utterance results; `audio_samples/` holds listening samples (open `audio_samples/index.html`).
+[![arXiv](https://img.shields.io/badge/arXiv-2611.11179-b31b1b.svg)](https://arxiv.org/abs/2611.11179)
+
+Jaeho Lee, Han-Lim Choi
+
+Code and listening samples for the paper [arXiv:2611.11179](https://arxiv.org/abs/2611.11179)
+([PDF](https://arxiv.org/pdf/2611.11179)), submitted to IEEE Transactions on Audio, Speech and Language Processing.
+
+`code/` runs every experiment of the paper and writes per-utterance results; `audio_samples/` holds listening samples
+(open `audio_samples/index.html`).
+
+## Summary
+Token-conditioned flow-matching TTS decoders run with two Euler steps keep their word error rate but lose one to six
+points of speaker similarity. Most of that loss comes from classifier-free guidance on the first step, taken at pure
+noise. Two training-free samplers recover most of it, each with three network evaluations (one fewer than the official two-step
+sampler):
+
+- **FSU** (first-step unguided): the first step uses the conditional velocity only, the second step keeps the official
+  guidance. Recovers 84-91% of the two-step similarity loss on CosyVoice 2/3.
+- **FSU-Mid**: one midpoint step with the same guidance interval. Recovers 77-85% on IndexTTS-2 and matches the
+  ten-step teacher on CosyVoice 2 and GLM-TTS.
 
 ## Code layout
 ```
@@ -81,3 +99,17 @@ outputs were bit-exact on rerun with the same GPU and software; CosyVoice 2 show
 All data and checkpoints are public and downloaded by the setup: Seed-TTS-eval
 (https://github.com/BytedanceSpeech/seed-tts-eval), the MiniMax multilingual test set (CC-BY-SA-4.0), LibriSpeech
 test-clean / LibriSpeech-PC (CC-BY-4.0) and MUSAN. Seed-TTS-eval audio is not redistributed in the samples.
+
+## License
+The code in this repository is released under the [MIT License](LICENSE). The upstream repositories that
+`code/patches/` applies to, the model checkpoints and the test data keep their own licenses.
+
+## Citation
+```bibtex
+@article{lee2026guidance,
+  title   = {Guidance at Pure Noise Erodes Speaker Similarity in Few-Step Token-Conditioned Flow-Matching {TTS}},
+  author  = {Lee, Jaeho and Choi, Han-Lim},
+  journal = {arXiv preprint arXiv:2611.11179},
+  year    = {2026}
+}
+```
