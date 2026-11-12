@@ -1,6 +1,6 @@
 # Listening samples
 
-Open `index.html` for a page with all players. Layout:
+Samples for [arXiv:2611.11179](https://arxiv.org/abs/2611.11179). Open `index.html` for a page with all players. Layout:
 `<section>/<decoder>/<condition>/<utterance>/<method>.wav`, plus `text.txt` (prompt text and target text) in each
 utterance folder. Every file is the unprocessed decoder output used in the paper (float WAV).
 
