@@ -13,7 +13,7 @@ Code and listening samples for the paper [arXiv:2611.11179](https://arxiv.org/ab
 ## Summary
 Token-conditioned flow-matching TTS decoders run with two Euler steps keep their word error rate but lose one to six
 points of speaker similarity. Most of that loss comes from classifier-free guidance on the first step, taken at pure
-noise. Two training-free samplers remove it, each with three network evaluations (one fewer than the official two-step
+noise. Two training-free samplers recover most of it, each with three network evaluations (one fewer than the official two-step
 sampler):
 
 - **FSU** (first-step unguided): the first step uses the conditional velocity only, the second step keeps the official
