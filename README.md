@@ -100,6 +100,10 @@ All data and checkpoints are public and downloaded by the setup: Seed-TTS-eval
 (https://github.com/BytedanceSpeech/seed-tts-eval), the MiniMax multilingual test set (CC-BY-SA-4.0), LibriSpeech
 test-clean / LibriSpeech-PC (CC-BY-4.0) and MUSAN. Seed-TTS-eval audio is not redistributed in the samples.
 
+## License
+The code in this repository is released under the [MIT License](LICENSE). The upstream repositories that
+`code/patches/` applies to, the model checkpoints and the test data keep their own licenses.
+
 ## Citation
 ```bibtex
 @article{lee2026guidance,
